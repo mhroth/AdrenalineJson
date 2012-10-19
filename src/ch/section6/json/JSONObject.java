@@ -17,21 +17,24 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
   }
   
   /**
-   * Construct a JSON object from a Java Object by reflection. 
+   * Construct a JSON object from a Java Object by reflection. This is a very simple implementation
+   * which only records publicly accessible fields.
    * @throws IllegalAccessException 
    * @throws IllegalArgumentException
    */
   public JSONObject(Object o) throws IllegalArgumentException, IllegalAccessException {
     map = new HashMap<String,JsonValue>();
     for (Field field : o.getClass().getDeclaredFields()) {
-      if (Number.class.isAssignableFrom(field.getDeclaringClass())) {
-        map.put(field.getName(), new JsonNumber((Number) field.get(o)));
-      } else if (String.class.isAssignableFrom(field.getDeclaringClass())) {
-        map.put(field.getName(), new JsonString((String) field.get(o)));
-      } else if (Boolean.class.isAssignableFrom(field.getDeclaringClass())) {
-        map.put(field.getName(), new JsonBoolean((Boolean) field.get(o)));
-      } else {
-        map.put(field.getName(), new JSONObject(field.get(o)));
+      if (field.isAccessible()) {
+        if (Number.class.isAssignableFrom(field.getDeclaringClass())) {
+          map.put(field.getName(), new JsonNumber((Number) field.get(o)));
+        } else if (String.class.isAssignableFrom(field.getDeclaringClass())) {
+          map.put(field.getName(), new JsonString((String) field.get(o)));
+        } else if (Boolean.class.isAssignableFrom(field.getDeclaringClass())) {
+          map.put(field.getName(), new JsonBoolean((Boolean) field.get(o)));
+        } else {
+          map.put(field.getName(), new JSONObject(field.get(o)));
+        }
       }
     }
   }
@@ -272,12 +275,12 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
       e.printStackTrace();
     }
     
-//    try {
-//      JsonObject jsonObj2 = new JsonObject("jo");
-//      System.out.println(jsonObj2.toString(2));
-//    } catch (IllegalArgumentException | IllegalAccessException e) {
-//      e.printStackTrace();
-//    }
+    try {
+      JSONObject jsonObj2 = new JSONObject("jo");
+      System.out.println(jsonObj2.toString(2));
+    } catch (IllegalArgumentException | IllegalAccessException e) {
+      e.printStackTrace();
+    }
   }
   
   private class IndexValuePair {
