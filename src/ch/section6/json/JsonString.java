@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the <organization> nor the
+ *     * Neither the name of the AdrenalineJson nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -32,7 +32,7 @@ import java.util.List;
 
 public class JsonString extends JsonValue {
 
-  protected final String string;
+  private final String string;
   
   public JsonString(String string) {
     this.string = string;
@@ -66,7 +66,10 @@ public class JsonString extends JsonValue {
   
   @Override
   public String toString() {
-    return "\"" + string.replace("\"", "\\\"") + "\"";
+    // escape all illegal JSON string sequences
+    return "\"" + string.replace("\"", "\\\"").replace("\t", "\\t").replace("\n", "\\n")
+        .replace("\f", "\\f").replace("\r", "\\r").replace("\\", "\\\\").replace("/", "\\/")
+        .replace("\b", "\\b") + "\"";
   }
 
 }
