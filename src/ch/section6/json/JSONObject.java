@@ -233,7 +233,7 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
         return pair;
       }
       case '[': {
-        JSONArray array = new JSONArray();
+        JSONArray<JsonValue> array = new JSONArray<JsonValue>();
         while (jsonString.charAt(i) != ']') {
           pair = parsePartial(i+1, jsonString, pair); // skip ']' or ','
           array.add(pair.value);

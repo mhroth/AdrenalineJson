@@ -41,7 +41,7 @@ public class JsonBoolean extends JsonValue {
   @Override
   protected List<String> toStringArray() {
     ArrayList<String> array = new ArrayList<String>();
-    array.add(bool ? "true" : "false");
+    array.add(toString());
     return array;
   }
   
@@ -56,26 +56,16 @@ public class JsonBoolean extends JsonValue {
   }
 
   @Override
-  public JSONObject asMap() throws JsonCastException {
-    throw new JsonCastException();
-  }
-
-  @Override
-  public JSONArray asArray() throws JsonCastException {
-    throw new JsonCastException();
-  }
-
-  @Override
   public Number asNumber() throws JsonCastException {
-    return bool ? 1.0 : 0.0;
+    return bool ? 1 : 0;
   }
 
   @Override
   public String asString() throws JsonCastException {
-    return bool ? "true" : "false";
+    return toString();
   }
   
-  public boolean value() {
+  public boolean asBoolean() {
     return bool;
   }
 

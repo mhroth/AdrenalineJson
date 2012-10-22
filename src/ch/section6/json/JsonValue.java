@@ -102,7 +102,7 @@ public abstract class JsonValue {
   }
   
   /** Returns this value as a {@link JSONArray}. */
-  public JSONArray asArray() throws JsonCastException {
+  public JSONArray<JsonValue> asArray() throws JsonCastException {
     throw new JsonCastException();
   }
 

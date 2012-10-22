@@ -33,12 +33,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class JSONArray extends JsonValue implements List<JsonValue> {
+public class JSONArray<E extends JsonValue> extends JsonValue implements List<E> {
   
-  private final ArrayList<JsonValue> list;
+  private final ArrayList<E> list;
   
   public JSONArray() {
-    list = new ArrayList<JsonValue>();
+    list = new ArrayList<E>();
   }
   
   protected List<String> toStringArray() {
@@ -95,20 +95,21 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
     return Type.ARRAY;
   }
   
+  @SuppressWarnings("unchecked")
   @Override
-  public JSONArray asArray() {
-    return this;
+  public JSONArray<JsonValue> asArray() {
+    return (JSONArray<JsonValue>) this;
   }
 
   @Override
-  public boolean add(JsonValue e) {
+  public boolean add(E e) {
     return list.add(e);
   }
 
   @Override
-  public void add(int index, JsonValue element) {
+  public void add(int index, E element) {
     if (index >= list.size()) {
-      int additionalElements = index - list.size();
+      int additionalElements = index - list.size() + 1;
       for (int i = 0; i < additionalElements; i++) {
         list.add(null);
       }
@@ -117,12 +118,12 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public boolean addAll(Collection<? extends JsonValue> c) {
+  public boolean addAll(Collection<? extends E> c) {
     return list.addAll(c);
   }
 
   @Override
-  public boolean addAll(int index, Collection<? extends JsonValue> c) {
+  public boolean addAll(int index, Collection<? extends E> c) {
     return list.addAll(index, c);
   }
 
@@ -142,7 +143,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public JsonValue get(int index) {
+  public E get(int index) {
     return list.get(index);
   }
   
@@ -154,8 +155,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
 
   @Override
   public int indexOf(Object o) {
-    // TODO Auto-generated method stub
-    return 0;
+    return list.indexOf(o);
   }
 
   @Override
@@ -164,7 +164,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public Iterator<JsonValue> iterator() {
+  public Iterator<E> iterator() {
     return list.iterator();
   }
   
@@ -187,7 +187,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex-1);
+            list.remove(currentIndex);
           }
         };
       }
@@ -213,7 +213,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex-1);
+            list.remove(currentIndex);
           }
         };
       }
@@ -239,7 +239,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex-1);
+            list.remove(currentIndex);
           }
         };
       }
@@ -252,12 +252,12 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public ListIterator<JsonValue> listIterator() {
+  public ListIterator<E> listIterator() {
     return list.listIterator();
   }
 
   @Override
-  public ListIterator<JsonValue> listIterator(int index) {
+  public ListIterator<E> listIterator(int index) {
     return list.listIterator(index);
   }
 
@@ -267,7 +267,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public JsonValue remove(int index) {
+  public E remove(int index) {
     return list.remove(index);
   }
 
@@ -282,7 +282,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public JsonValue set(int index, JsonValue element) {
+  public E set(int index, E element) {
     return list.set(index, element);
   }
 
@@ -292,7 +292,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
 
   @Override
-  public List<JsonValue> subList(int fromIndex, int toIndex) {
+  public List<E> subList(int fromIndex, int toIndex) {
     return list.subList(fromIndex, toIndex);
   }
 
@@ -307,7 +307,7 @@ public class JSONArray extends JsonValue implements List<JsonValue> {
   }
   
   public static void main(String[] args) {
-    JSONArray array = new JSONArray();
+    JSONArray<JsonValue> array = new JSONArray<JsonValue>();
     array.add(new JsonNull());
     array.add(new JsonNumber(10.5));
     array.add(new JsonString("hello"));
