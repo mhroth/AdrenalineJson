@@ -1,3 +1,30 @@
+/*
+ * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the <organization> nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package ch.section6.json;
 
 import java.lang.reflect.Field;
@@ -39,6 +66,21 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
     }
   }
   
+  public JSONObject(Map<String,Object> m) {
+    map = new HashMap<String,JsonValue>();
+    for (Map.Entry<String,Object> e : m.entrySet()) {
+      if (Number.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
+        map.put(e.getKey().toString(), new JsonNumber((Number) e.getValue()));
+      } else if (String.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
+        map.put(e.getKey().toString(), new JsonString((String) e.getValue()));
+      } else if (Boolean.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
+        map.put(e.getKey().toString(), new JsonBoolean((Boolean) e.getValue()));
+      } else {
+//        map.put(e.getKey().toString(), new JSONObject(e.getValue()));
+      }
+    }
+  }
+  
   @Override
   protected List<String> toStringArray() {
     ArrayList<String> array = new ArrayList<String>();
@@ -65,7 +107,7 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     for (Map.Entry<String,JsonValue> e : map.entrySet()) {
-      sb.append("\""); sb.append(e.getKey()); sb.append("\"");
+      sb.append("\"").append(e.getKey()).append("\"");
       sb.append(":");
       sb.append(e.getValue().toString());
       sb.append(",");
@@ -247,21 +289,6 @@ public class JSONObject extends JsonValue implements Map<String,JsonValue> {
       }
   }
 
-  @Override
-  public JSONArray asArray() throws JsonCastException {
-    throw new JsonCastException();
-  }
-
-  @Override
-  public Number asNumber() throws JsonCastException {
-    throw new JsonCastException();
-  }
-
-  @Override
-  public String asString() throws JsonCastException {
-    throw new JsonCastException();
-  }
-  
   public static void main(String[] args) {
     JSONObject jsonObj = new JSONObject();
     jsonObj.put("hello", new JsonString("world"));
