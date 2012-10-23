@@ -84,7 +84,7 @@ two
 three
 4
 ```
-Note that the `Number` was automatically converted to a `String`.
+Note that the `Number` was automatically converted to a `String`. This kind of a cast can result in a `JsonCastException`. It is a `RuntimeException`, so it doesn't need to caught unless you plan on doing something stupid.
 
 ## Parsing
 
