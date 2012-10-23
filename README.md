@@ -31,6 +31,19 @@ yields:
 ```
 {"hello":"world","response":42,"byebye":false,"otherobj":{}}
 ```
+Of course it does pretty print too.
+```Java
+System.out.println(obj.toString(2));
+```
+```Java
+{
+  "hello": "world",
+  "response": 42,
+  "byebye": false,
+  "otherobj": {}
+}  
+```
+
 Normally when retrieving values from the map, a `JsonValue` object is returned. This can be annoying if you already know what the object type is.
 ```Java
 String str = obj.getString("hello");
