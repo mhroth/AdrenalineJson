@@ -67,9 +67,6 @@ public class JsonString extends JsonValue {
   @Override
   public String toString() {
     // escape all illegal JSON string sequences
-    return "\"" + string.replace("\"", "\\\"").replace("\t", "\\t").replace("\n", "\\n")
-        .replace("\f", "\\f").replace("\r", "\\r").replace("\\", "\\\\").replace("/", "\\/")
-        .replace("\b", "\\b") + "\"";
+    return "\"" + string.replace("\"", "\\\"") + "\"";
   }
-
 }
