@@ -96,29 +96,29 @@ public abstract class JsonValue {
   
   public abstract Type getType();
 
-  /** Returns this value as a {@link JSONObject}. */
-  public JSONObject asMap() throws JsonCastException {
-    throw new JsonCastException();
+  /** Returns this value as a {@link JsonObject}. */
+  public JsonObject asMap() throws JsonCastException {
+    throw new JsonCastException("This JsonValue cannot be cast to a JsonObject");
   }
   
-  /** Returns this value as a {@link JSONArray}. */
-  public JSONArray<JsonValue> asArray() throws JsonCastException {
-    throw new JsonCastException();
+  /** Returns this value as a {@link JsonArray}. */
+  public JsonArray asArray() throws JsonCastException {
+    throw new JsonCastException("This JsonValue cannot be cast to a JsonArray");
   }
 
   /** Returns this value as a {@link Number}. */
   public Number asNumber() throws JsonCastException {
-    throw new JsonCastException();
+    throw new JsonCastException("This JsonValue cannot be cast to a Number");
   }
   
   /** Returns this value as a {@link String}. */
   public String asString() throws JsonCastException {
-    throw new JsonCastException();
+    throw new JsonCastException("This JsonValue cannot be cast to a String");
   }
   
   /** Returns this value as a <code>boolean</code>. */
   public boolean asBoolean() throws JsonCastException {
-    throw new JsonCastException();
+    throw new JsonCastException("This JsonValue cannot be cast to a boolean");
   }
   
 }
