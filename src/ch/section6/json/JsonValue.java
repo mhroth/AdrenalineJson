@@ -116,4 +116,9 @@ public abstract class JsonValue {
     throw new JsonCastException();
   }
   
+  /** Returns this value as a <code>boolean</code>. */
+  public boolean asBoolean() throws JsonCastException {
+    throw new JsonCastException();
+  }
+  
 }
