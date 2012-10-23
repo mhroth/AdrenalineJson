@@ -1,4 +1,4 @@
-# AdrendlineJson
+# AdrenalineJson
 
 This is a Java library for manipulating JSON. There are many like it. This one is mine.
 
@@ -60,7 +60,7 @@ array.add(new JsonArray());
 array.add(new JsonObject());
 System.out.println(array);
 ```
-yield:
+yields:
 ```Java
 [true,"two",3,[],{}]
 ```
