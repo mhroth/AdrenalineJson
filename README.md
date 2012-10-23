@@ -2,6 +2,15 @@
 
 This is a Java library for manipulating JSON. There are many like it. This one is mine.
 
+## Why use it?
+ * It has a nice and clean interface.
+ * It is small (23KB).
+ * No external dependencies.
+ * Compatible with Java 1.5 and above.
+ * Parses and produces standard JSON. No funny stuff.
+
+AdrenalineJson doesn't have all of the features of other libraries, but that's ok because you probably aren't using them anyway. Adrenaline goes in, gets the job done as quickly as possible, and leaves you to get on with things.
+
 
 # Examples
 
