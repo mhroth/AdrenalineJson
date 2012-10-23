@@ -8,6 +8,7 @@ This is a Java library for manipulating JSON. There are many like it. This one i
  * No external dependencies.
  * Compatible with Java 1.5 and above.
  * Parses and produces standard JSON. No funny stuff.
+ * [BSD license](http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html). Just use it. I don't care what you do with it.
 
 AdrenalineJson doesn't have all of the features of other libraries, but that's ok because you probably aren't using them anyway. Adrenaline goes in, gets the job done as quickly as possible, and leaves you to get on with things.
 
