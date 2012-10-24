@@ -27,7 +27,6 @@
 
 package ch.section6.json;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,44 +40,6 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
   
   public JsonObject() {
     map = new HashMap<String,JsonValue>();
-  }
-  
-  /**
-   * Construct a JSON object from a Java Object by reflection. This is a very simple implementation
-   * which only records publicly accessible fields.
-   * @throws IllegalAccessException 
-   * @throws IllegalArgumentException
-   */
-  public JsonObject(Object o) throws IllegalArgumentException, IllegalAccessException {
-    map = new HashMap<String,JsonValue>();
-    for (Field field : o.getClass().getDeclaredFields()) {
-      if (field.isAccessible()) {
-        if (Number.class.isAssignableFrom(field.getDeclaringClass())) {
-          map.put(field.getName(), new JsonNumber((Number) field.get(o)));
-        } else if (String.class.isAssignableFrom(field.getDeclaringClass())) {
-          map.put(field.getName(), new JsonString((String) field.get(o)));
-        } else if (Boolean.class.isAssignableFrom(field.getDeclaringClass())) {
-          map.put(field.getName(), new JsonBoolean((Boolean) field.get(o)));
-        } else {
-          map.put(field.getName(), new JsonObject(field.get(o)));
-        }
-      }
-    }
-  }
-  
-  public JsonObject(Map<String,Object> m) {
-    map = new HashMap<String,JsonValue>();
-    for (Map.Entry<String,Object> e : m.entrySet()) {
-      if (Number.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
-        map.put(e.getKey().toString(), new JsonNumber((Number) e.getValue()));
-      } else if (String.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
-        map.put(e.getKey().toString(), new JsonString((String) e.getValue()));
-      } else if (Boolean.class.isAssignableFrom(e.getValue().getClass().getDeclaringClass())) {
-        map.put(e.getKey().toString(), new JsonBoolean((Boolean) e.getValue()));
-      } else {
-//        map.put(e.getKey().toString(), new JSONObject(e.getValue()));
-      }
-    }
   }
   
   @Override
@@ -218,10 +179,6 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
   public JsonValue put(String key, Boolean value) {
     return map.put(key, new JsonBoolean(value));
   }
-  
-  public JsonValue put(String key, Object o) throws IllegalArgumentException, IllegalAccessException {
-    return map.put(key, new JsonObject(o));
-  }
 
   @Override
   public JsonValue put(String key, JsonValue value) {
@@ -229,99 +186,111 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
   }
   
   public static JsonValue parse(String jsonString) throws JsonParseException {
-    IndexValuePair pair = new JsonObject().new IndexValuePair();
-    return JsonObject.parsePartial(0, jsonString, pair).value;
+    return parseValue(0, jsonString.length(), jsonString);
   }
   
-  /**
-   * 
-   * @param i
-   * @param jsonString
-   * @param pair
-   * @return  <code>IndexValuePair.index</code> contains the index of the character after the parsed <code>JsonValue</code>.
-   * @throws JsonParseException
-   */
-  private static IndexValuePair parsePartial(int i, String jsonString, IndexValuePair pair) throws JsonParseException {
-    switch (jsonString.charAt(i)) {
-      case ' ': case '\n': case '\t': case '\r': {
-        return parsePartial(i+1, jsonString, pair); // skip whitespace
+  private static int nextValueString(int i, final int j, String str) throws JsonParseException {
+    switch (str.charAt(i)) {
+      case 't': return i + 4; // true
+      case 'f': return i + 5; // false
+      case 'n': return i + 4; // null
+      case '-':               // number
+      case '0': case '1': case '2': case '3': case '4':
+      case '5': case '6': case '7': case '8': case '9': {
+        int k = i + 1;
+        for (; k < j; ++k) {
+          char c = str.charAt(k);
+          if (c == ']' || c == '}' || c == ',') break;
+        }
+        return k;
+      }
+      case '"': {             // string
+        int k = i;
+        do {
+          k = str.indexOf('"', k+1);
+        } while (str.charAt(k-1) == '\\'); // ignore \" escape
+        if (k < j) return k+1;
+        throw new JsonParseException();
       }
       case '{': {
-        JsonObject obj = new JsonObject();
-        while (jsonString.charAt(i++) != '}') {
-          String key = parsePartial(i, jsonString, pair).value.asString();
-          i = skipWhitespace(pair.index, jsonString);
-          if (jsonString.charAt(i) != ':') throw new JsonParseException(
-              "Expected ':' in dictionary description. Found '" + jsonString.charAt(i) + "");
-          i = skipWhitespace(i+1, jsonString);
-          JsonValue value = parsePartial(i, jsonString, pair).value;
-          obj.put(key, value);
-          i = skipWhitespace(pair.index, jsonString);
-          if (jsonString.charAt(i) == ',') {
-            i = skipWhitespace(i+1, jsonString);
-          }
+        int m = 1;
+        for (int k = i+1; k < j; ++k) {
+          char c = str.charAt(k);
+          if (c == '}') --m;
+          else if (c == '{') ++m;
+          if (m == 0) return k+1;
         }
-        pair.value = obj;
-        pair.index = skipWhitespace(i+1, jsonString);
-        return pair;
+        throw new JsonParseException();
       }
       case '[': {
-        JsonArray array = new JsonArray();
-        while (jsonString.charAt(i) != ']') {
-          pair = parsePartial(i+1, jsonString, pair); // skip ']' or ','
-          array.add(pair.value);
-          i = pair.index;
+        int m = 1;
+        for (int k = i+1; k < j; ++k) {
+          char c = str.charAt(k);
+          if (c == ']') --m;
+          else if (c == '[') ++m;
+          if (m == 0) return k+1;
         }
-        pair.value = array;
-        pair.index += 1; // advance past the trailing ']'
-        return pair;
+        throw new JsonParseException();
       }
-      case '"': {
-        int j = i;
-        do {
-          j = jsonString.indexOf('"', j+1);
-        } while (jsonString.charAt(j-1) == '\\'); // ignore \" escape
-        pair.value = new JsonString(jsonString.substring(i+1, j));
-        pair.index = j+1;
-        return pair;
-      }
-      case 't': {
-        pair.value = new JsonBoolean(true);
-        pair.index = i + 4;
-        return pair;
-      }
-      case 'f': {
-        pair.value = new JsonBoolean(false);
-        pair.index = i + 5;
-        return pair;
-      }
-      case 'n': {
-        pair.value = new JsonNull();
-        pair.index = i + 4;
-        return pair;
-      }
+      default: throw new JsonParseException();
+    }
+  }
+  
+  private static JsonValue parseValue(int i, int j, String str) throws JsonParseException {
+    switch (str.charAt(i)) {
+      case 't': return new JsonBoolean(true);
+      case 'f': return new JsonBoolean(false);
+      case 'n': return JsonValue.JSON_NULL;
       case '-':
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9': {
-        int k = jsonString.length();
-        int j = i + 1;
-        for (; j < k; j++) {
-          char c = jsonString.charAt(j);
-          if (c == ']' || c == '}' || c == ',') break;
-        }
         try {
-          pair.value = new JsonNumber(jsonString.substring(i, j));
-          pair.index = j;
-          return pair;
+          return new JsonNumber(str.substring(i, j));
         } catch (NumberFormatException e) {
           throw new JsonParseException(e);
         }
       }
-      default: throw new JsonParseException(
-          "Unknown character near index " + i + ": \"" + jsonString + "\"");
+      case '"': {
+        String substr = str.substring(i+1, j-1);
+        return new JsonString(substr.replace("\\\"", "\""));
       }
+      case '{': {
+        JsonObject obj = new JsonObject();
+        i = skipWhitespace(i+1, str);
+        while (str.charAt(i) != '}') {
+          int k = nextValueString(i, j, str);
+          JsonValue key = parseValue(i, k, str);
+          if (key.getType() != JsonValue.Type.STRING)
+            throw new JsonParseException(
+                "Expected a string as a map key. Instead, parsed a " + key.getType() + ".");
+          i = skipWhitespace(k, str);
+          if (str.charAt(i) != ':') throw new JsonParseException();
+          i = skipWhitespace(i+1, str);
+          k = nextValueString(i, j, str);
+          JsonValue value = parseValue(i, k, str);
+          i = skipWhitespace(k, str);
+          if (str.charAt(i) == ',') i = skipWhitespace(i+1, str);
+          
+          obj.put(key.asString(), value);
+        }
+        return obj;
+      }
+      case '[': {
+        JsonArray array = new JsonArray();
+        i = skipWhitespace(i+1, str);
+        while (str.charAt(i) != ']') {
+          int k = nextValueString(i, j, str);
+          JsonValue value = parseValue(i, k, str);
+          array.add(value);
+          i = skipWhitespace(k, str);
+          if (str.charAt(i) == ',') i = skipWhitespace(i+1, str);
+        }
+        return array;
+      }
+      default: throw new JsonParseException();
+    }
   }
-  
+
   private static int skipWhitespace(int i, String str) {
     while (
         i < str.length() &&
@@ -346,24 +315,20 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
     }
     
     try {
-      JsonObject jsonObj2 = new JsonObject("jo");
-      System.out.println(jsonObj2.toString(2));
-    } catch (IllegalArgumentException | IllegalAccessException e) {
+      JsonObject obj = new JsonObject();
+      obj.put("hello", "world");
+      obj.put("response", 42);
+      obj.put("byebye", false);
+      obj.put("otherobj", new JsonObject());
+//      System.out.println(obj);
+//      JsonObject jsonObj2 = new JsonObject("jo");
+      System.out.println(obj.toString(2));
+    } catch (IllegalArgumentException e) {
       e.printStackTrace();
     }
     
-    String str = "{\n  \"hello\" : \"world\",\n  \"good\"  :  \"bad\"\n}";
+    String str = "{\n  \"hello\" : \"world\",\n  \"good\"  : \"bad\",\n  \"obj\"   : {\"test\":5.87238746}, \"array\":[23423423, true,\n{}]\n}";
     JsonObject jsonObj3 = JsonObject.parse(str).asMap();
     System.out.println(jsonObj3);
-  }
-  
-  private class IndexValuePair {
-    public int index;
-    public JsonValue value;
-    
-    public IndexValuePair() {
-      index = 0;
-      value = null;
-    }
   }
 }
