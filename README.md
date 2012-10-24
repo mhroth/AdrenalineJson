@@ -6,7 +6,7 @@ This is a Java library for manipulating JSON. There are many like it. This one i
  * It has a nice and clean interface.
  * It is small (23KB).
  * No external dependencies.
- * Compatible with Java 1.5 and above.
+ * Compatible with Java 1.6 and above.
  * Parses and produces standard JSON. No funny stuff.
  * [BSD license](http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html). Just use it. I don't care what you do with it.
 
