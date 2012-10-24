@@ -69,7 +69,7 @@ false
 
 ## JsonArray
 
-A `JsonArray` is simply a list of `JsonValue`s. You can store whatever you want in it.
+A `JsonArray` is simply a list of `JsonValue`s. Really, it implements the `List<JsonValue>` interface. Use it wherever you use `List`s.
 ```Java
 JsonArray array = new JsonArray();
 array.add(true);
