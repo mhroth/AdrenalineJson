@@ -43,20 +43,24 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
   }
   
   @Override
-  protected List<String> toStringArray() {
+  protected List<String> getTokenList() {
     ArrayList<String> array = new ArrayList<String>();
     if (map.isEmpty()) {
-      array.add("{ }");
+      array.add("{");
+      array.add("}");
     } else {
       array.add("{");
       array.add("\n");
+      array.add("\t");
       for (Map.Entry<String,JsonValue> e : map.entrySet()) {
         array.add("\"" + e.getKey() + "\"");
         array.add(":");
-        array.addAll(e.getValue().toStringArray());
+        array.addAll(e.getValue().getTokenList());
         array.add(",");
         array.add("\n");
+        array.add("\t");
       }
+      array.remove(array.size()-1); // remove trailing tab
       array.remove(array.size()-2); // remove trailing comma
       array.add("}");
     }
@@ -299,36 +303,5 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
       ++i;
     }
     return i;
-  }
-
-  public static void main(String[] args) {
-    JsonObject jsonObj = new JsonObject();
-    jsonObj.put("hello", new JsonString("world"));
-    String jsonString = jsonObj.toString(0);
-    System.out.println(jsonString);
-    
-    try {
-      JsonValue value = JsonObject.parse(jsonString);
-      System.out.println(value.toString(2));
-    } catch (JsonParseException e) {
-      e.printStackTrace();
-    }
-    
-    try {
-      JsonObject obj = new JsonObject();
-      obj.put("hello", "world");
-      obj.put("response", 42);
-      obj.put("byebye", false);
-      obj.put("otherobj", new JsonObject());
-//      System.out.println(obj);
-//      JsonObject jsonObj2 = new JsonObject("jo");
-      System.out.println(obj.toString(2));
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    }
-    
-    String str = "{\n  \"hello\" : \"world\",\n  \"good\"  : \"bad\",\n  \"obj\"   : {\"test\":5.87238746}, \"array\":[23423423, true,\n{}]\n}";
-    JsonObject jsonObj3 = JsonObject.parse(str).asMap();
-    System.out.println(jsonObj3);
   }
 }

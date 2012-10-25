@@ -45,48 +45,44 @@ public abstract class JsonValue {
   protected static final JsonNull JSON_NULL = new JsonNull();
   
   public String toString(int indent) {
+    if (indent < 0) throw new IllegalArgumentException();
+    
     // if there is no indent, use the faster toString() method
     if (indent == 0) return toString();
     
-    List<String> strings = toStringArray();
+    List<String> tokenList = getTokenList();
     int currentIndent = 0;
     String currentIndentString = "";
     
     StringBuilder sb = new StringBuilder();
-    for (String string : strings) {
-      switch (string.charAt(0)) {
+    final int len = tokenList.size();
+    for (int i = 0; i < len; ++i) {
+      String token = tokenList.get(i);
+      switch (token.charAt(0)) {
         case '[': case '{': {
-          sb.append(string);
+          sb.append(token);
           currentIndent += indent;
           currentIndentString = spaces(currentIndent);
           break;
         }
         case ']': case '}': {
-          sb.insert(sb.length()-indent, string);
           currentIndent -= indent;
           currentIndentString = spaces(currentIndent);
+          if (!(tokenList.get(i-1).equals("{") || tokenList.get(i-1).equals("]")))
+              sb.append(currentIndentString);
+          sb.append(token);
           break;
         }
-        case ':': {
-          sb.append(": ");
-          break;
-        }
-        case '\n': {
-          sb.append(string);
-          sb.append(currentIndentString);
-          break;
-        }
-        default: {
-          sb.append(string);
-          break;
-        }
+        case ':': sb.append(": "); break;
+        case '\t': sb.append(currentIndentString); break;
+        default: sb.append(token); break;
       }
     }
     
     return sb.toString();
   }
   
-  protected abstract List<String> toStringArray();
+  protected abstract List<String> getTokenList();
   
   protected String spaces(int x) {
     StringBuilder sb = new StringBuilder();

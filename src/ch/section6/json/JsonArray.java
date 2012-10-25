@@ -41,32 +41,35 @@ public class JsonArray extends JsonValue implements List<JsonValue> {
     list = new ArrayList<JsonValue>();
   }
   
-  protected List<String> toStringArray() {
+  protected List<String> getTokenList() {
     ArrayList<String> strArray = new ArrayList<String>(2*list.size()+1); // minimum size
     
     switch (list.size()) {
       case 0: {
-        strArray.add("[]");
+        strArray.add("[");
+        strArray.add("]");
         break;
       }
       case 1: {
         strArray.add("[");
-        strArray.addAll(list.get(0).toStringArray());
+        strArray.addAll(list.get(0).getTokenList());
         strArray.add("]");
         break;
       }
       default: {
         strArray.add("[");
         strArray.add("\n");
+        strArray.add("\t");
         final int sizem = list.size()-1;
         for (int i = 0; i < sizem; i++) {
           JsonValue value = list.get(i);
-          List<String> strings = value.toStringArray();
+          List<String> strings = value.getTokenList();
           strArray.addAll(strings);
           strArray.add(",");
           strArray.add("\n");
+          strArray.add("\t");
         }
-        strArray.addAll(list.get(sizem).toStringArray());
+        strArray.addAll(list.get(sizem).getTokenList());
         strArray.add("\n");
         strArray.add("]");
       }

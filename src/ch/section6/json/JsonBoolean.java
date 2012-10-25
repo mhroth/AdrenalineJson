@@ -39,7 +39,7 @@ public class JsonBoolean extends JsonValue {
   }
   
   @Override
-  protected List<String> toStringArray() {
+  protected List<String> getTokenList() {
     ArrayList<String> array = new ArrayList<String>();
     array.add(toString());
     return array;
