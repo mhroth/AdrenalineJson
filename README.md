@@ -120,3 +120,12 @@ yields:
 hello: world
 ```
 `JsonObject.parse(...)` can throw a `JsonParseException`, but it is a `RuntimeException` and it isn't necessary to catch it if you don't expect anything bad.
+
+# Miscellaneous
+
+## Open Source License
+
+AdrenalineJson is open source under the [BSD 3-Clause License](http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html).
+
+## Known Bugs
+ * Characters `[`, `]`, `{`, and `}` inside of strings will break the parsing.
