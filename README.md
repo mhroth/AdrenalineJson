@@ -28,6 +28,8 @@ AdrenalineJson doesn't have all of the features of other libraries, but that's o
 A `JsonObject` implements the `Map<String,JsonValue>` interface. Easy to use!
 
 ```Java
+import ch.section6.json.*;
+
 JsonObject obj = new JsonObject();
 obj.put("hello", "world");
 obj.put("response", 42);
