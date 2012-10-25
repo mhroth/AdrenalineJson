@@ -2,9 +2,11 @@
 
 This is a Java library for manipulating JSON. There are many like it. This one is mine.
 
+[[**DOWNLOAD**](https://github.com/downloads/section6/AdrenalineJson/AdrenalineJson.jar)]
+
 ## Why use it?
  * It has a nice and clean interface.
- * It is small (23KB).
+ * It is small (< 23KB).
  * No external dependencies.
  * Compatible with Java 1.6 and above.
  * Parses and produces standard JSON. No funny stuff.
@@ -26,6 +28,8 @@ AdrenalineJson doesn't have all of the features of other libraries, but that's o
 A `JsonObject` implements the `Map<String,JsonValue>` interface. Easy to use!
 
 ```Java
+import ch.section6.json.*;
+
 JsonObject obj = new JsonObject();
 obj.put("hello", "world");
 obj.put("response", 42);
@@ -120,3 +124,12 @@ yields:
 hello: world
 ```
 `JsonObject.parse(...)` can throw a `JsonParseException`, but it is a `RuntimeException` and it isn't necessary to catch it if you don't expect anything bad.
+
+# Miscellaneous
+
+## Open Source License
+
+AdrenalineJson is open source under the [BSD 3-Clause License](http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html).
+
+## Known Bugs
+ * Characters `[`, `]`, `{`, and `}` inside of strings will break the parsing.
