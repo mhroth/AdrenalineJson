@@ -68,7 +68,7 @@ public abstract class JsonValue {
         case ']': case '}': {
           currentIndent -= indent;
           currentIndentString = spaces(currentIndent);
-          if (!(tokenList.get(i-1).equals("{") || tokenList.get(i-1).equals("]")))
+          if (!(tokenList.get(i-1).equals("{") || tokenList.get(i-1).equals("[")))
               sb.append(currentIndentString);
           sb.append(token);
           break;
