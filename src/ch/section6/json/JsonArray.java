@@ -41,34 +41,25 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
     list = new ArrayList<JsonValue>();
   }
   
+  @Override
   protected void appendTokenList(List<String> tokenList) {
-    switch (list.size()) {
-      case 0: {
-        tokenList.add("[");
-        tokenList.add("]");
-        break;
-      }
-      case 1: {
-        tokenList.add("[");
-        list.get(0).appendTokenList(tokenList);
-        tokenList.add("]");
-        break;
-      }
-      default: {
-        tokenList.add("[");
+    if (list.isEmpty()) {
+      tokenList.add("[");
+      tokenList.add("]");
+    } else {
+      tokenList.add("[");
+      tokenList.add("\n");
+      tokenList.add("\t");
+      final int sizem = list.size()-1;
+      for (int i = 0; i < sizem; i++) {
+        list.get(i).appendTokenList(tokenList);
+        tokenList.add(",");
         tokenList.add("\n");
         tokenList.add("\t");
-        final int sizem = list.size()-1;
-        for (int i = 0; i < sizem; i++) {
-          list.get(i).appendTokenList(tokenList);
-          tokenList.add(",");
-          tokenList.add("\n");
-          tokenList.add("\t");
-        }
-        list.get(sizem).appendTokenList(tokenList);
-        tokenList.add("\n");
-        tokenList.add("]");
       }
+      list.get(sizem).appendTokenList(tokenList);
+      tokenList.add("\n");
+      tokenList.add("]");
     }
   }
   
