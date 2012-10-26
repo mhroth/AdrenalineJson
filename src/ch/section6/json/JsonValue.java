@@ -85,15 +85,17 @@ public abstract class JsonValue {
     return sb.toString();
   }
   
+  /** Appends all string tokens for this object to the given list. */
   protected abstract void appendTokenList(List<String> tokenList);
   
+  /** Returns a <code>String</code> with the given number of spaces. */
   private String spaces(int x) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < x; i++) sb.append(" ");
     return sb.toString();
   }
   
-  /** Returns a deep copy of this value; */
+  /** Returns a deep copy of this value. */
   public JsonValue copy() {
     return this;
   }
