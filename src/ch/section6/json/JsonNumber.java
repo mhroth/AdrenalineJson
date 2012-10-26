@@ -27,7 +27,6 @@
 
 package ch.section6.json;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JsonNumber extends JsonValue {
@@ -35,6 +34,7 @@ public class JsonNumber extends JsonValue {
   private final Number number;
   
   public JsonNumber(Number number) {
+    if (number == null) throw new IllegalArgumentException();
     this.number = number.doubleValue();
   }
   
@@ -58,10 +58,8 @@ public class JsonNumber extends JsonValue {
   }
 
   @Override
-  protected List<String> getTokenList() {
-    ArrayList<String> array = new ArrayList<String>();
-    array.add(toString());
-    return array;
+  protected void appendTokenList(List<String> tokenList) {
+    tokenList.add(toString());
   }
   
   @Override
@@ -69,6 +67,22 @@ public class JsonNumber extends JsonValue {
     long num = number.longValue();
     return ((double) num == number.doubleValue())
         ? Long.toString(num) : Double.toString(number.doubleValue());
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o != null) {
+      if (o instanceof JsonNumber) {
+        JsonNumber jsonNumber = (JsonNumber) o;
+        return number.equals(jsonNumber.number);
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return number.hashCode();
   }
 
 }

@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-public class JsonArray extends JsonValue implements List<JsonValue> {
+public final class JsonArray extends JsonValue implements List<JsonValue> {
   
   private final ArrayList<JsonValue> list;
   
@@ -41,41 +41,35 @@ public class JsonArray extends JsonValue implements List<JsonValue> {
     list = new ArrayList<JsonValue>();
   }
   
-  protected List<String> getTokenList() {
-    ArrayList<String> strArray = new ArrayList<String>(2*list.size()+1); // minimum size
-    
+  protected void appendTokenList(List<String> tokenList) {
     switch (list.size()) {
       case 0: {
-        strArray.add("[");
-        strArray.add("]");
+        tokenList.add("[");
+        tokenList.add("]");
         break;
       }
       case 1: {
-        strArray.add("[");
-        strArray.addAll(list.get(0).getTokenList());
-        strArray.add("]");
+        tokenList.add("[");
+        list.get(0).appendTokenList(tokenList);
+        tokenList.add("]");
         break;
       }
       default: {
-        strArray.add("[");
-        strArray.add("\n");
-        strArray.add("\t");
+        tokenList.add("[");
+        tokenList.add("\n");
+        tokenList.add("\t");
         final int sizem = list.size()-1;
         for (int i = 0; i < sizem; i++) {
-          JsonValue value = list.get(i);
-          List<String> strings = value.getTokenList();
-          strArray.addAll(strings);
-          strArray.add(",");
-          strArray.add("\n");
-          strArray.add("\t");
+          list.get(i).appendTokenList(tokenList);
+          tokenList.add(",");
+          tokenList.add("\n");
+          tokenList.add("\t");
         }
-        strArray.addAll(list.get(sizem).getTokenList());
-        strArray.add("\n");
-        strArray.add("]");
+        list.get(sizem).appendTokenList(tokenList);
+        tokenList.add("\n");
+        tokenList.add("]");
       }
     }
-    
-    return strArray;
   }
   
   @Override
@@ -341,6 +335,36 @@ public class JsonArray extends JsonValue implements List<JsonValue> {
   public boolean remove(Object o) {
     return list.remove(o);
   }
+  
+  public boolean remove(String s) {
+    for (int i = 0; i < list.size(); ++i) {
+      if (list.get(i).asString().equals(s)) {
+        list.remove(i);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean remove(Number n) {
+    for (int i = 0; i < list.size(); ++i) {
+      if (list.get(i).asNumber().equals(n)) {
+        list.remove(i);
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  public boolean remove(Boolean b) {
+    for (int i = 0; i < list.size(); ++i) {
+      if (list.get(i).asBoolean() == b.booleanValue()) {
+        list.remove(i);
+        return true;
+      }
+    }
+    return false;
+  }
 
   @Override
   public JsonValue remove(int index) {
@@ -392,6 +416,31 @@ public class JsonArray extends JsonValue implements List<JsonValue> {
   @Override
   public <T> T[] toArray(T[] a) {
     return list.toArray(a);
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o != null) {
+      if (o instanceof JsonArray) {
+        JsonArray array = (JsonArray) o;
+        if (list.size() == array.size()) {
+          for (int i = 0; i < list.size(); ++i) {
+            if (!list.get(i).equals(array.get(i))) return false;
+          }
+        }
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public JsonValue copy() {
+    JsonArray array = new JsonArray();
+    for (int i = 0; i < list.size(); ++i) {
+      array.add(list.get(i).copy());
+    }
+    return array;
   }
   
   public static void main(String[] args) {

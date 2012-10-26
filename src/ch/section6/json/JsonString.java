@@ -27,7 +27,6 @@
 
 package ch.section6.json;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class JsonString extends JsonValue {
@@ -35,6 +34,7 @@ public class JsonString extends JsonValue {
   private final String string;
   
   public JsonString(String string) {
+    if (string == null) throw new IllegalArgumentException();
     this.string = string;
   }
 
@@ -58,15 +58,29 @@ public class JsonString extends JsonValue {
   }
 
   @Override
-  protected List<String> getTokenList() {
-    ArrayList<String> array = new ArrayList<String>();
-    array.add(toString());
-    return array;
+  protected void appendTokenList(List<String> tokenList) {
+    tokenList.add(toString());
   }
   
   @Override
   public String toString() {
     // escape all illegal JSON string sequences
     return "\"" + string.replace("\"", "\\\"") + "\"";
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o != null) {
+      if (o instanceof JsonString) {
+        JsonString jsonString = (JsonString) o;
+        return string.equals(jsonString.string);
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return string.hashCode();
   }
 }

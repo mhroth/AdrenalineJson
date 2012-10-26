@@ -27,22 +27,20 @@
 
 package ch.section6.json;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class JsonBoolean extends JsonValue {
+public final class JsonBoolean extends JsonValue {
 
-  private final boolean bool;
+  private final Boolean bool;
   
-  public JsonBoolean(boolean bool) {
+  public JsonBoolean(Boolean bool) {
+    if (bool == null) throw new IllegalArgumentException();
     this.bool = bool;
   }
   
   @Override
-  protected List<String> getTokenList() {
-    ArrayList<String> array = new ArrayList<String>();
-    array.add(toString());
-    return array;
+  protected void appendTokenList(List<String> tokenList) {
+    tokenList.add(toString());
   }
   
   @Override
@@ -67,6 +65,22 @@ public class JsonBoolean extends JsonValue {
   
   public boolean asBoolean() {
     return bool;
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o != null) {
+      if (o instanceof JsonString) {
+        JsonBoolean jsonBoolean = (JsonBoolean) o;
+        return bool.equals(jsonBoolean.bool);
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public int hashCode() {
+    return bool.hashCode();
   }
 
 }

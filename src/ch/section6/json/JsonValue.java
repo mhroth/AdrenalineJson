@@ -27,8 +27,10 @@
 
 package ch.section6.json;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/** An abstract superclass of all JSON values. */
 public abstract class JsonValue {
   
   /** A enumeration of all JSON data types. */
@@ -50,7 +52,8 @@ public abstract class JsonValue {
     // if there is no indent, use the faster toString() method
     if (indent == 0) return toString();
     
-    List<String> tokenList = getTokenList();
+    List<String> tokenList = new ArrayList<String>();
+    appendTokenList(tokenList);
     int currentIndent = 0;
     String currentIndentString = "";
     
@@ -82,14 +85,20 @@ public abstract class JsonValue {
     return sb.toString();
   }
   
-  protected abstract List<String> getTokenList();
+  protected abstract void appendTokenList(List<String> tokenList);
   
-  protected String spaces(int x) {
+  private String spaces(int x) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < x; i++) sb.append(" ");
     return sb.toString();
   }
   
+  /** Returns a deep copy of this value; */
+  public JsonValue copy() {
+    return this;
+  }
+  
+  /** Returns the JSON type of this value. */
   public abstract Type getType();
 
   /** Returns this value as a {@link JsonObject}. */

@@ -27,10 +27,9 @@
 
 package ch.section6.json;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class JsonNull extends JsonValue {
+public final class JsonNull extends JsonValue {
 
   @Override
   public Type getType() {
@@ -53,10 +52,19 @@ public class JsonNull extends JsonValue {
   }
 
   @Override
-  protected List<String> getTokenList() {
-    ArrayList<String> array = new ArrayList<String>();
-    array.add(toString());
-    return array;
+  protected void appendTokenList(List<String> tokenList) {
+    tokenList.add(toString());
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == null) return false;
+    return JsonNull.class.equals(o.getClass());
+  }
+  
+  @Override
+  public int hashCode() {
+    return 0;
   }
 
 }

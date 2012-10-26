@@ -27,14 +27,13 @@
 
 package ch.section6.json;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class JsonObject extends JsonValue implements Map<String,JsonValue> {
+public final class JsonObject extends JsonValue implements Map<String,JsonValue> {
   
   private final Map<String,JsonValue> map;
   
@@ -43,28 +42,26 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
   }
   
   @Override
-  protected List<String> getTokenList() {
-    ArrayList<String> array = new ArrayList<String>();
+  protected void appendTokenList(List<String> tokenList) {
     if (map.isEmpty()) {
-      array.add("{");
-      array.add("}");
+      tokenList.add("{");
+      tokenList.add("}");
     } else {
-      array.add("{");
-      array.add("\n");
-      array.add("\t");
+      tokenList.add("{");
+      tokenList.add("\n");
+      tokenList.add("\t");
       for (Map.Entry<String,JsonValue> e : map.entrySet()) {
-        array.add("\"" + e.getKey() + "\"");
-        array.add(":");
-        array.addAll(e.getValue().getTokenList());
-        array.add(",");
-        array.add("\n");
-        array.add("\t");
+        tokenList.add("\"" + e.getKey() + "\"");
+        tokenList.add(":");
+        e.getValue().appendTokenList(tokenList);
+        tokenList.add(",");
+        tokenList.add("\n");
+        tokenList.add("\t");
       }
-      array.remove(array.size()-1); // remove trailing tab
-      array.remove(array.size()-2); // remove trailing comma
-      array.add("}");
+      tokenList.remove(tokenList.size()-1); // remove trailing tab
+      tokenList.remove(tokenList.size()-2); // remove trailing comma
+      tokenList.add("}");
     }
-    return array;
   }
   
   @Override
@@ -189,6 +186,31 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
     return map.put(key, value);
   }
   
+  @Override
+  public boolean equals(Object o) {
+    if (o != null) {
+      if (o instanceof JsonObject) {
+        JsonObject obj = (JsonObject) o;
+        if (map.size() == obj.size()) {
+          for (String key : map.keySet()) {
+            if (!map.get(key).equals(obj.get(key))) return false;
+          }
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  @Override
+  public JsonValue copy() {
+    JsonObject obj = new JsonObject();
+    for (Map.Entry<String,JsonValue> e : map.entrySet()) {
+      obj.put(e.getKey(), e.getValue().copy());
+    }
+    return obj;
+  }
+  
   public static JsonValue parse(String jsonString) throws JsonParseException {
     return parseValue(0, jsonString.length(), jsonString);
   }
@@ -303,5 +325,58 @@ public class JsonObject extends JsonValue implements Map<String,JsonValue> {
       ++i;
     }
     return i;
+  }
+
+  public static void main(String[] args) {
+    JsonObject jsonObj = new JsonObject();
+    jsonObj.put("hello", new JsonString("world"));
+    String jsonString = jsonObj.toString(0);
+    System.out.println(jsonString);
+    
+    try {
+      JsonValue value = JsonObject.parse(jsonString);
+      System.out.println(value.toString(2));
+    } catch (JsonParseException e) {
+      e.printStackTrace();
+    }
+    
+    try {
+      JsonObject obj = new JsonObject();
+      obj.put("hello", "world");
+      obj.put("response", 42);
+      obj.put("byebye", false);
+      obj.put("otherobj", new JsonObject());
+//      System.out.println(obj);
+//      JsonObject jsonObj2 = new JsonObject("jo");
+      System.out.println(obj.toString(2));
+    } catch (IllegalArgumentException e) {
+      e.printStackTrace();
+    }
+    
+    String str = "{\n  \"hello\" : \"world\",\n  \"good\"  : \"bad\",\n  \"obj\"   : {\"test\":5.87238746}, \"array\":[23423423, true,\n{}]\n}";
+    JsonObject jsonObj3 = JsonObject.parse(str).asMap();
+    System.out.println(jsonObj3);
+    
+    System.out.println(jsonObj3.toString(2));
+    
+    JsonObject jo4 = JsonObject.parse(jsonObj3.toString(2)).asMap();
+    System.out.println(jo4.toString(4));
+    /*
+    try {
+      InputStream in = new FileInputStream(new File("C:\\\\Users\\martin.roth\\Desktop\\sample.json"));
+      ByteArrayOutputStream out = new ByteArrayOutputStream(in.available());
+      while (in.available() > 0) out.write(in.read());
+      String s = new String(out.toByteArray(), "UTF-8");
+      in.close(); out.close();
+      
+      JsonObject obj = JsonObject.parse(s).asMap();
+      System.out.println(obj);
+      
+    } catch (FileNotFoundException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    */
   }
 }
