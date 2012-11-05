@@ -180,6 +180,22 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   public JsonValue put(String key, Boolean value) {
     return map.put(key, new JsonBoolean(value));
   }
+  
+  /**
+   * Puts an array of <code>Number</code>s into the map, with the array automatically converted to
+   * a {@link JsonArray}.
+   */
+  public JsonValue put(String key, Number[] values) {
+    return map.put(key, new JsonArray(values));
+  }
+
+  /**
+   * Puts an array of <code>String</code>s into the map, with the array automatically converted to
+   * a {@link JsonArray}.
+   */
+  public JsonValue put(String key, String[] values) {
+    return map.put(key, new JsonArray(values));
+  }
 
   @Override
   public JsonValue put(String key, JsonValue value) {

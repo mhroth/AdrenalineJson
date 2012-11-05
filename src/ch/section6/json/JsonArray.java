@@ -41,6 +41,16 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
     list = new ArrayList<JsonValue>();
   }
   
+  public JsonArray(Number[] values) {
+    list = new ArrayList<JsonValue>();
+    add(values);
+  }
+  
+  public JsonArray(String[] values) {
+    list = new ArrayList<JsonValue>();
+    add(values);
+  }
+  
   @Override
   protected void appendTokenList(List<String> tokenList) {
     if (list.isEmpty()) {
@@ -103,6 +113,18 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
   
   public boolean add(Boolean bool) {
     return list.add(new JsonBoolean(bool));
+  }
+  
+  public boolean add(Number[] values) {
+    list.ensureCapacity(list.size() + values.length);
+    for (Number value : values) add(value);
+    return true;
+  }
+  
+  public boolean add(String[] values) {
+    list.ensureCapacity(list.size() + values.length);
+    for (String value : values) add(value);
+    return true;
   }
 
   @Override
