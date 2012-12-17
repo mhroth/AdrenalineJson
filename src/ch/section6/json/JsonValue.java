@@ -27,6 +27,12 @@
 
 package ch.section6.json;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +132,50 @@ public abstract class JsonValue {
   /** Returns this value as a <code>boolean</code>. */
   public boolean asBoolean() throws JsonCastException {
     throw new JsonCastException("This JsonValue cannot be cast to a boolean");
+  }
+  
+  /**
+   * A convenience method to Save this value to file with the given indent, assuming a UTF-8 character set. 
+   * @throws IOException  If something goes wrong!
+   */
+  public void saveToFile(File file, int indent) throws IOException {
+  	saveToFile(file, indent, "UTF-8");
+  }
+  
+  /**
+   * A convenience method to save this value to file with the given indent and the character set name. 
+   * @throws IOException  If something goes wrong!
+   */
+  public void saveToFile(File file, int indent, String charsetName) throws IOException {
+  	BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file));
+  	String jsonString = this.toString(indent);
+  	byte[] data = jsonString.getBytes(charsetName);
+  	out.write(data);
+  	out.flush();
+  	out.close();
+  }
+
+  /**
+   * A convenience method to load a value from file assuming a UTF-8 character set.
+   * @throws IOException  If something goes wrong!
+   */
+  public static JsonValue loadFromFile(File file) throws IOException {
+  	return loadFromFile(file, "UTF-8");
+  }
+  
+  /**
+   * A convenience method to load a value from file with the given character set name. 
+   * @throws IOException  If something goes wrong!
+   */
+  public static JsonValue loadFromFile(File file, String charsetName) throws IOException, JsonParseException {
+  	BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
+  	int len = in.available();
+  	byte[] data = new byte[len];
+  	in.read(data);
+  	in.close();
+  	String jsonString = new String(data, charsetName);
+  	JsonValue jsonValue = JsonObject.parse(jsonString);
+  	return jsonValue;
   }
   
 }
