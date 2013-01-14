@@ -33,6 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+/** A JSON representation of an ordered list of {@link JsonValue}s. */
 public final class JsonArray extends JsonValue implements List<JsonValue> {
   
   private final ArrayList<JsonValue> list;
@@ -445,6 +446,17 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
       }
     }
     return false;
+  }
+  
+  @Override
+  // http://www.linuxtopia.org/online_books/programming_books/thinking_in_java/TIJ313_029.htm
+  public int hashCode() {
+  	int h = 17;
+  	for (int i = 0; i < list.size(); ++i) {
+      JsonValue v = list.get(i);
+      h = 37*h + v.hashCode();
+  	}
+  	return h;
   }
   
   @Override

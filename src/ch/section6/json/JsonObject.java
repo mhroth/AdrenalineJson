@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/** A JSON representation of a {@link Map}. */
 public final class JsonObject extends JsonValue implements Map<String,JsonValue> {
   
   private final Map<String,JsonValue> map;
@@ -219,6 +220,16 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   }
   
   @Override
+  public int hashCode() {
+  	int h = 17;
+  	for (Map.Entry<String,JsonValue> e : map.entrySet()) {
+  		h = 37*h + e.getKey().hashCode();
+  		h = 37*h + e.getValue().hashCode();
+  	}
+  	return h;
+  }
+  
+  @Override
   public JsonValue copy() {
     JsonObject obj = new JsonObject();
     for (Map.Entry<String,JsonValue> e : map.entrySet()) {
@@ -343,56 +354,4 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
     return i;
   }
 
-  public static void main(String[] args) {
-    JsonObject jsonObj = new JsonObject();
-    jsonObj.put("hello", new JsonString("world"));
-    String jsonString = jsonObj.toString(0);
-    System.out.println(jsonString);
-    
-    try {
-      JsonValue value = JsonObject.parse(jsonString);
-      System.out.println(value.toString(2));
-    } catch (JsonParseException e) {
-      e.printStackTrace();
-    }
-    
-    try {
-      JsonObject obj = new JsonObject();
-      obj.put("hello", "world");
-      obj.put("response", 42);
-      obj.put("byebye", false);
-      obj.put("otherobj", new JsonObject());
-//      System.out.println(obj);
-//      JsonObject jsonObj2 = new JsonObject("jo");
-      System.out.println(obj.toString(2));
-    } catch (IllegalArgumentException e) {
-      e.printStackTrace();
-    }
-    
-    String str = "{\n  \"hello\" : \"world\",\n  \"good\"  : \"bad\",\n  \"obj\"   : {\"test\":5.87238746}, \"array\":[23423423, true,\n{}]\n}";
-    JsonObject jsonObj3 = JsonObject.parse(str).asMap();
-    System.out.println(jsonObj3);
-    
-    System.out.println(jsonObj3.toString(2));
-    
-    JsonObject jo4 = JsonObject.parse(jsonObj3.toString(2)).asMap();
-    System.out.println(jo4.toString(4));
-    /*
-    try {
-      InputStream in = new FileInputStream(new File("C:\\\\Users\\martin.roth\\Desktop\\sample.json"));
-      ByteArrayOutputStream out = new ByteArrayOutputStream(in.available());
-      while (in.available() > 0) out.write(in.read());
-      String s = new String(out.toByteArray(), "UTF-8");
-      in.close(); out.close();
-      
-      JsonObject obj = JsonObject.parse(s).asMap();
-      System.out.println(obj);
-      
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    */
-  }
 }
