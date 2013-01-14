@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.List;
 
+/** A JSON representation of a {@link Number}. */
 public class JsonNumber extends JsonValue {
 
   private final Number number;

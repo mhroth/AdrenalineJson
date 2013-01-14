@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.List;
 
+/** A JSON representation of a <code>null</code> value. */
 public final class JsonNull extends JsonValue {
 
   @Override

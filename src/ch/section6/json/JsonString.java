@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.List;
 
+/** A JSON representation of a {@link String}. */
 public class JsonString extends JsonValue {
 
   private final String string;

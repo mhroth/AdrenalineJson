@@ -31,6 +31,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -157,17 +158,22 @@ public abstract class JsonValue {
 
   /**
    * A convenience method to load a value from file assuming a UTF-8 character set.
-   * @throws IOException  If something goes wrong!
+   * @throws FileNotFoundException  If the file could not be found.
+   * @throws IOException  If the file could not be read.
+   * @throws JsonParseException  If the file could not be parsed into valid JSON.
    */
   public static JsonValue loadFromFile(File file) throws IOException {
   	return loadFromFile(file, "UTF-8");
   }
   
   /**
-   * A convenience method to load a value from file with the given character set name. 
-   * @throws IOException  If something goes wrong!
+   * A convenience method to load a value from file with the given character set name.
+   * @throws FileNotFoundException  If the file could not be found.
+   * @throws IOException  If the file could not be read.
+   * @throws JsonParseException  If the file could not be parsed into valid JSON.
    */
-  public static JsonValue loadFromFile(File file, String charsetName) throws IOException, JsonParseException {
+  public static JsonValue loadFromFile(File file, String charsetName)
+  		throws FileNotFoundException, IOException, JsonParseException {
   	BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
   	int len = in.available();
   	byte[] data = new byte[len];

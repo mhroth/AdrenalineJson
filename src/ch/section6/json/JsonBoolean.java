@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.List;
 
+/** A JSON representation of a {@link Boolean}. */
 public final class JsonBoolean extends JsonValue {
 
   private final Boolean bool;
