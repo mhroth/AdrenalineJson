@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -221,14 +222,11 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   
   @Override
   public int hashCode() {
-  	int h = 17;
-  	for (Map.Entry<String,JsonValue> e : map.entrySet()) {
-  		h = 37*h + e.getKey().hashCode();
-  		h = 37*h + e.getValue().hashCode();
-  	}
-  	return h;
+  	int keysHash = map.keySet().hashCode();
+  	int valuesHash = new HashSet<JsonValue>(map.values()).hashCode();
+  	return (keysHash ^ valuesHash);
   }
-  
+
   @Override
   public JsonValue copy() {
     JsonObject obj = new JsonObject();
