@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /** A JSON representation of an ordered list of {@link JsonValue}s. */
-public final class JsonArray extends JsonValue implements List<JsonValue> {
+public final class JsonArray extends JsonValue implements List<JsonValue>, ImmutableJsonArray {
   
   private final ArrayList<JsonValue> list;
   
@@ -169,22 +169,27 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
     return list.get(index);
   }
   
+  @Override
   public String getString(int index) {
     return list.get(index).asString();
   }
   
+  @Override
   public Number getNumber(int index) {
     return list.get(index).asNumber();
   }
   
+  @Override
   public boolean getBoolean(int index) {
     return list.get(index).asBoolean();
   }
   
+  @Override
   public JsonArray getArray(int index) {
     return list.get(index).asArray();
   }
   
+  @Override
   public JsonObject getObject(int index) {
     return list.get(index).asMap();
   }
@@ -208,6 +213,36 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
   @Override
   public Iterator<JsonValue> iterator() {
     return list.iterator();
+  }
+  
+  /**
+   * Returns an {@link Iterable} for iterating across {@link JsonArray}s.
+   * Elements are cast to {@link JsonArray}s if necessary.
+   */
+  public Iterable<JsonArray> arrayIteratable() {
+    return new Iterable<JsonArray>() {
+      @Override
+      public Iterator<JsonArray> iterator() {
+        return new Iterator<JsonArray>() {
+          private int currentIndex = 0;
+          
+          @Override
+          public boolean hasNext() {
+            return (currentIndex < list.size());
+          }
+
+          @Override
+          public JsonArray next() {
+            return hasNext() ? list.get(currentIndex++).asArray() : null;
+          }
+
+          @Override
+          public void remove() {
+            list.remove(currentIndex);
+          }
+        };
+      }
+    };
   }
   
   /**
@@ -239,11 +274,8 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
       }
     };
   }
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Strings}.
-   * Elements are cast to strings if necessary.
-   */
+
+  @Override
   public Iterable<String> stringIterable() {
     return new Iterable<String>() {
       @Override
@@ -263,17 +295,14 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex);
+            throw new UnsupportedOperationException();
           }
         };
       }
     };
   }
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Number}s.
-   * Elements are cast to numbers if necessary.
-   */
+
+  @Override
   public Iterable<Number> numberIterable() {
     return new Iterable<Number>() {
       @Override
@@ -293,17 +322,14 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex);
+          	throw new UnsupportedOperationException();
           }
         };
       }
     };
   }
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Boolean}s.
-   * Elements are cast to booleans if necessary.
-   */
+
+  @Override
   public Iterable<Boolean> booleanIterable() {
     return new Iterable<Boolean>() {
       @Override
@@ -323,7 +349,7 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
 
           @Override
           public void remove() {
-            list.remove(currentIndex);
+          	throw new UnsupportedOperationException();
           }
         };
       }
@@ -410,6 +436,10 @@ public final class JsonArray extends JsonValue implements List<JsonValue> {
   
   public JsonValue set(int index, Boolean bool) {
     return list.set(index, new JsonBoolean(bool));
+  }
+  
+  public ImmutableJsonArray asImmutable() {
+  	return this;
   }
 
   @Override

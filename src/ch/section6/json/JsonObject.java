@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** A JSON representation of a {@link Map}. */
-public final class JsonObject extends JsonValue implements Map<String,JsonValue> {
+public final class JsonObject extends JsonValue implements Map<String,JsonValue>, ImmutableJsonObject {
   
   private final Map<String,JsonValue> map;
   
@@ -113,32 +113,36 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
 
   @Override
   public JsonValue get(Object key) {
-    return map.get(key);
+  	if (map.containsKey(key)) {
+  		return map.get(key);
+  	} else {
+  		throw new UnknownKeyException(key.toString());
+  	}
   }
   
-  /** A convenience function to return the keyed value as a {@link String}. */
+  @Override
   public String getString(String key) throws JsonCastException {
-    return map.get(key).asString();
+    return get(key).asString();
   }
   
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
+  @Override
   public boolean getBoolean(String key) throws JsonCastException {
-    return map.get(key).asBoolean();
+    return get(key).asBoolean();
   }
   
-  /** A convenience function to return the keyed value as a {@link JsonObject}. */
+  @Override
   public JsonObject getObject(String key) throws JsonCastException {
-    return map.get(key).asMap();
+    return get(key).asMap();
   }
   
-  /** A convenience function to return the keyed value as a {@link JsonArray}. */
+  @Override
   public JsonArray getArray(String key) throws JsonCastException {
-    return map.get(key).asArray();
+    return get(key).asArray();
   }
   
-  /** A convenience function to return the keyed value as a {@link Number}. */
+  @Override
   public Number getNumber(String key) throws JsonCastException {
-    return map.get(key).asNumber();
+    return get(key).asNumber();
   }
 
   @Override
@@ -234,6 +238,11 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
       obj.put(e.getKey(), e.getValue().copy());
     }
     return obj;
+  }
+  
+  @Override
+  public ImmutableJsonObject asImmutable() {
+  	return this;
   }
   
   public static JsonValue parse(String jsonString) throws JsonParseException {
