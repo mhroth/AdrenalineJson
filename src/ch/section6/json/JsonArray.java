@@ -42,14 +42,19 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
     list = new ArrayList<JsonValue>();
   }
   
-  public JsonArray(Number[] values) {
+  public JsonArray(Number... values) {
     list = new ArrayList<JsonValue>();
     add(values);
   }
   
-  public JsonArray(String[] values) {
+  public JsonArray(String... values) {
     list = new ArrayList<JsonValue>();
     add(values);
+  }
+  
+  public JsonArray(Object... values) {
+  	list = new ArrayList<JsonValue>();
+  	add(values);
   }
   
   @Override
@@ -104,27 +109,46 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
     return list.add(e);
   }
   
-  public boolean add(String string) {
-    return list.add(new JsonString(string));
-  }
-  
-  public boolean add(Number number) {
-    return list.add(new JsonNumber(number));
+  public boolean add(Object... values) {
+  	for (Object o : values) {
+  		if (o instanceof String) {
+  			add((String) o);
+  		} else if (o instanceof Number) {
+  			add((Number) o);
+  		} else if (o instanceof Boolean) {
+  			add((Boolean) o);
+  		} else if (o == null) {
+  			add(JsonValue.JSON_NULL);
+  		} else if (o instanceof JsonObject) {
+  			add((JsonObject) o);
+  		} else if (o instanceof JsonArray) {
+  			add((JsonArray) o);
+  		} else {
+  			throw new UnsupportedOperationException();
+  		}
+  	}
+  	return true;
   }
   
   public boolean add(Boolean bool) {
     return list.add(new JsonBoolean(bool));
   }
-  
-  public boolean add(Number[] values) {
+
+  /** A convenience method for adding any number of <code>Number</code>s to an array. */
+  public boolean add(Number... values) {
     list.ensureCapacity(list.size() + values.length);
-    for (Number value : values) add(value);
+    for (Number value : values) {
+    	list.add(new JsonNumber(value));
+    }
     return true;
   }
   
-  public boolean add(String[] values) {
+  /** A convenience method for adding any number of <code>String</code>s to an array. */
+  public boolean add(String... values) {
     list.ensureCapacity(list.size() + values.length);
-    for (String value : values) add(value);
+    for (String value : values) {
+    	list.add(new JsonString(value));
+    }
     return true;
   }
 
