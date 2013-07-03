@@ -125,6 +125,22 @@ hello: world
 ```
 `JsonObject.parse(...)` can throw a `JsonParseException`, but it is a `RuntimeException` and it isn't necessary to catch it if you don't expect anything bad.
 
+## getByPath
+
+`JsonObject` has a method `JsonValue getByPath(String path)` which allows nested values to be retrieved by a URL-style path. For example, given an object:
+```JSON
+{
+  "a": {
+    "b": [
+      {
+        "c": 5
+      }
+    ]
+  }
+}
+```
+then `jsonObj.getByPath("/a/b/0/c")` would return a `JsonNumber` with value `5`. This convenience method makes it easy to query JSON objects via the web.
+
 # Miscellaneous
 
 ## Open Source License
