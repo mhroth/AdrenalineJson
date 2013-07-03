@@ -29,11 +29,13 @@ package ch.section6.json;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -172,16 +174,41 @@ public abstract class JsonValue {
    * @throws IOException  If the file could not be read.
    * @throws JsonParseException  If the file could not be parsed into valid JSON.
    */
-  public static JsonValue loadFromFile(File file, String charsetName)
-  		throws FileNotFoundException, IOException, JsonParseException {
-  	BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
-  	int len = in.available();
-  	byte[] data = new byte[len];
-  	in.read(data);
-  	in.close();
-  	String jsonString = new String(data, charsetName);
-  	JsonValue jsonValue = JsonObject.parse(jsonString);
-  	return jsonValue;
+	public static JsonValue loadFromFile(File file, String charsetName)
+			throws FileNotFoundException, IOException, JsonParseException {
+		return loadFromStream(
+				new BufferedInputStream(new FileInputStream(file)),
+				charsetName);
+	}
+
+  /**
+   * A convenience method to load a value from an input stream assuming a UTF-8 character set.
+   * @throws IOException  If the input stream could not be read.
+   * @throws JsonParseException  If the file could not be parsed into valid JSON.
+   */
+  public static JsonValue loadFromStream(InputStream in)
+  		throws IOException, JsonParseException {
+  	return loadFromStream(in, "UTF-8");
+  }
+  
+  /**
+   * A convenience method to load a value from an input stream with the given character set name.
+   * @throws IOException  If the input stream could not be read.
+   * @throws JsonParseException  If the file could not be parsed into valid JSON.
+   */
+  public static JsonValue loadFromStream(InputStream in, String charsetName)
+  		throws IOException, JsonParseException {
+  	final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  	byte[] buffer = new byte[1024]; // a 1KB buffer
+  	
+  	int len = in.read(buffer);
+  	while (len >= 0) {
+  		baos.write(buffer, 0, len);
+  		len = in.read(buffer);
+  	}
+
+  	return JsonObject.parse(
+  			new String(baos.toByteArray(), charsetName));
   }
   
 }
