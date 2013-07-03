@@ -2,8 +2,6 @@
 
 This is a Java library for manipulating JSON. There are many like it. This one is mine.
 
-[[**DOWNLOAD**](https://github.com/downloads/section6/AdrenalineJson/AdrenalineJson.jar)]
-
 ## Why use it?
  * It has a nice and clean interface.
  * It is small (< 25KB).
