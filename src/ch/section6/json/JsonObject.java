@@ -120,6 +120,22 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   	}
   }
   
+  /** Return a value according to its path, e.g. <code>/a/b/0/c</code>. */
+  public JsonValue getByPath(String path) {
+  	JsonValue value = this;
+  	if (path != null && !path.isEmpty()) { // early exist condition
+  		for (String p : path.split("/")) {
+    		if (p.isEmpty()) continue;
+    		switch (value.getType()) {
+    			case MAP: value = value.asMap().get(p); break;
+    			case ARRAY: value = value.asArray().get(Integer.parseInt(p)); break;
+    			default: throw new IllegalArgumentException(String.format("Unknown path: %s", path));
+    		}
+    	}
+  	}
+  	return value;
+  }
+
   @Override
   public String getString(String key) throws JsonCastException {
     return get(key).asString();
@@ -128,6 +144,18 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   @Override
   public boolean getBoolean(String key) throws JsonCastException {
     return get(key).asBoolean();
+  }
+  
+  /**
+   * A convenience function to return the keyed value as a boolean,
+   * with a default if the value does not exist.
+   */
+  public boolean getBoolean(String key, boolean b) throws JsonCastException {
+  	if (containsKey(key)) {
+  		return get(key).asBoolean();
+  	} else {
+  		return b;
+  	}
   }
   
   @Override
@@ -264,13 +292,13 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
         }
         return k;
       }
-      case '"': {             // string
+      case '"': { // string
         int k = i;
         do {
           k = str.indexOf('"', k+1);
         } while (str.charAt(k-1) == '\\'); // ignore \" escape
         if (k < j) return k+1;
-        throw new JsonParseException();
+        throw new JsonParseException("No balancing quote found for string.");
       }
       case '{': {
         int m = 1;
@@ -280,7 +308,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
           else if (c == '{') ++m;
           if (m == 0) return k+1;
         }
-        throw new JsonParseException();
+        throw new JsonParseException("No balancing } found dictionary.");
       }
       case '[': {
         int m = 1;
@@ -290,7 +318,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
           else if (c == '[') ++m;
           if (m == 0) return k+1;
         }
-        throw new JsonParseException();
+        throw new JsonParseException("No balancing ] found for array.");
       }
       default: throw new JsonParseException();
     }
