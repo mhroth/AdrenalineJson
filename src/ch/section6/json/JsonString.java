@@ -32,11 +32,18 @@ import java.util.List;
 /** A JSON representation of a {@link String}. */
 public class JsonString extends JsonValue {
 
+	/** The original string. */
   private final String string;
+  
+  /** The JSON-escaped string. */
+  private final String escapedString;
   
   public JsonString(String string) {
     if (string == null) throw new IllegalArgumentException();
     this.string = string;
+    
+    // escape all illegal JSON string sequences
+    escapedString = jsonEscape(string);
   }
 
   @Override
@@ -57,6 +64,13 @@ public class JsonString extends JsonValue {
       throw new JsonCastException(e);
     }
   }
+  
+  /** JSON-escape a string. */
+  public static String jsonEscape(String s) {
+  	s = s.replace("\\", "\\\\"); // escape '\'
+    s = s.replace("\"", "\\\""); // escape '"'
+    return String.format("\"%s\"", s);
+  }
 
   @Override
   protected void appendTokenList(List<String> tokenList) {
@@ -65,8 +79,7 @@ public class JsonString extends JsonValue {
   
   @Override
   public String toString() {
-    // escape all illegal JSON string sequences
-    return "\"" + string.replace("\"", "\\\"") + "\"";
+  	return escapedString;
   }
   
   @Override

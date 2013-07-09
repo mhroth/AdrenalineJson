@@ -29,6 +29,7 @@ package ch.section6.json;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -150,6 +151,10 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
     	list.add(new JsonString(value));
     }
     return true;
+  }
+  
+  public boolean add(Date date) {
+  	return list.add(new JsonString(ISO8601_DATE_FORMAT.format(date)));
   }
 
   @Override

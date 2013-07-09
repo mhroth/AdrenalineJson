@@ -28,6 +28,7 @@
 package ch.section6.json;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +54,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
       tokenList.add("\n");
       tokenList.add("\t");
       for (Map.Entry<String,JsonValue> e : map.entrySet()) {
-        tokenList.add("\"" + e.getKey() + "\"");
+        tokenList.add(JsonString.jsonEscape(e.getKey()));
         tokenList.add(":");
         e.getValue().appendTokenList(tokenList);
         tokenList.add(",");
@@ -71,7 +72,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
     StringBuilder sb = new StringBuilder();
     sb.append("{");
     for (Map.Entry<String,JsonValue> e : map.entrySet()) {
-      sb.append("\"").append(e.getKey()).append("\"");
+    	sb.append(JsonString.jsonEscape(e.getKey()));
       sb.append(":");
       sb.append(e.getValue().toString());
       sb.append(",");
@@ -141,6 +142,14 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
     return get(key).asString();
   }
   
+  public String getNumber(String key, String s) throws JsonCastException {
+  	if (containsKey(key)) {
+  		return get(key).asString();
+  	} else {
+  		return s;
+  	}
+  }
+  
   @Override
   public boolean getBoolean(String key) throws JsonCastException {
     return get(key).asBoolean();
@@ -171,6 +180,14 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   @Override
   public Number getNumber(String key) throws JsonCastException {
     return get(key).asNumber();
+  }
+
+  public Number getNumber(String key, Number n) throws JsonCastException {
+  	if (containsKey(key)) {
+  		return get(key).asNumber();
+  	} else {
+  		return n;
+  	}
   }
 
   @Override
@@ -205,6 +222,10 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   
   public JsonValue put(String key, String value) {
     return map.put(key, new JsonString(value));
+  }
+  
+  public JsonValue put(String key, Date date) {
+  	return map.put(key, new JsonString(ISO8601_DATE_FORMAT.format(date)));
   }
 
   public JsonValue put(String key, Number value) {

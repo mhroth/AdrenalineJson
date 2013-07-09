@@ -36,6 +36,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +56,10 @@ public abstract class JsonValue {
   
   /** A {@link JsonNull} singleton. */
   protected static final JsonNull JSON_NULL = new JsonNull();
+  
+  /** An ISO 8601 time formatter. */
+  protected static final DateFormat ISO8601_DATE_FORMAT =
+  		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
   
   public String toString(int indent) {
     if (indent < 0) throw new IllegalArgumentException();
