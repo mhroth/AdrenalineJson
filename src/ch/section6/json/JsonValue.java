@@ -36,9 +36,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /** An abstract superclass of all JSON values. */
@@ -49,18 +48,15 @@ public abstract class JsonValue {
     BOOLEAN,
     NUMBER,
     STRING,
+    DATE,
     ARRAY,
     MAP,
     NULL
   }
   
   /** A {@link JsonNull} singleton. */
-  protected static final JsonNull JSON_NULL = new JsonNull();
-  
-  /** An ISO 8601 time formatter. */
-  protected static final DateFormat ISO8601_DATE_FORMAT =
-  		new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-  
+  public static final JsonNull JSON_NULL = new JsonNull();
+
   public String toString(int indent) {
     if (indent < 0) throw new IllegalArgumentException();
     
@@ -120,29 +116,34 @@ public abstract class JsonValue {
 
   /** Returns this value as a {@link JsonObject}. */
   public JsonObject asMap() throws JsonCastException {
-    throw new JsonCastException("This JsonValue cannot be cast to a JsonObject");
+    throw new JsonCastException(String.format("JsonValue %s cannot be cast to a JsonObject.", toString()));
   }
   
   /** Returns this value as a {@link JsonArray}. */
   public JsonArray asArray() throws JsonCastException {
-    throw new JsonCastException("This JsonValue cannot be cast to a JsonArray");
+  	throw new JsonCastException(String.format("JsonValue %s cannot be cast to a JsonArray.", toString()));
   }
 
   /** Returns this value as a {@link Number}. */
   public Number asNumber() throws JsonCastException {
-    throw new JsonCastException("This JsonValue cannot be cast to a Number");
+  	throw new JsonCastException(String.format("JsonValue %s cannot be cast to a Number.", toString()));
   }
   
   /** Returns this value as a {@link String}. */
   public String asString() throws JsonCastException {
-    throw new JsonCastException("This JsonValue cannot be cast to a String");
+  	throw new JsonCastException(String.format("JsonValue %s cannot be cast to a string.", toString()));
   }
   
   /** Returns this value as a <code>boolean</code>. */
   public boolean asBoolean() throws JsonCastException {
-    throw new JsonCastException("This JsonValue cannot be cast to a boolean");
+  	throw new JsonCastException(String.format("JsonValue %s cannot be cast to a boolean.", toString()));
   }
   
+  /** Returns this value as a <code>boolean</code>. */
+  public Date asDate() throws JsonCastException {
+  	throw new JsonCastException(String.format("JsonValue %s cannot be cast to a date.", toString()));
+  }
+
   /**
    * A convenience method to Save this value to file with the given indent, assuming a UTF-8 character set. 
    * @throws IOException  If something goes wrong!

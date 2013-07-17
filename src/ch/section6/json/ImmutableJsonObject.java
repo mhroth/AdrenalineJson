@@ -28,6 +28,7 @@
 package ch.section6.json;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 
 /** An interface rendering a {@link JsonObject} immutable. */
@@ -51,6 +52,10 @@ public interface ImmutableJsonObject {
   
   /** A convenience function to return the keyed value as a {@link Number}. */
   public Number getNumber(String key)
+  		throws JsonCastException, UnknownKeyException;
+  
+  /** A convenience function to return the keyed value as a {@link Date}. */
+  public Date getDate(String key)
   		throws JsonCastException, UnknownKeyException;
   
   public boolean isEmpty();

@@ -154,7 +154,7 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
   }
   
   public boolean add(Date date) {
-  	return list.add(new JsonString(ISO8601_DATE_FORMAT.format(date)));
+  	return list.add(new JsonDate(date));
   }
 
   @Override
@@ -203,6 +203,11 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
     return list.get(index).asString();
   }
   
+  @Override
+  public Date getDate(int index) {
+  	return list.get(index).asDate();
+  }
+    
   @Override
   public Number getNumber(int index) {
     return list.get(index).asNumber();

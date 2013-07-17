@@ -27,6 +27,8 @@
 
 package ch.section6.json;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 
 /** A JSON representation of a {@link String}. */
@@ -63,6 +65,15 @@ public class JsonString extends JsonValue {
     } catch (NumberFormatException e) {
       throw new JsonCastException(e);
     }
+  }
+  
+  @Override
+  public Date asDate() {
+  	try {
+			return JsonDate.asDate(string);
+		} catch (ParseException e) {
+			throw new JsonCastException(e);
+		}
   }
   
   /** JSON-escape a string. */

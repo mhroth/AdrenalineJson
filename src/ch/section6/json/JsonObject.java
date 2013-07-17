@@ -27,6 +27,7 @@
 
 package ch.section6.json;
 
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -42,6 +43,11 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   
   public JsonObject() {
     map = new HashMap<String,JsonValue>();
+  }
+  
+  public JsonObject(String key, JsonValue value) {
+    map = new HashMap<String,JsonValue>();
+    map.put(key, value);
   }
   
   @Override
@@ -142,11 +148,24 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
     return get(key).asString();
   }
   
-  public String getNumber(String key, String s) throws JsonCastException {
+  public String getString(String key, String s) throws JsonCastException {
   	if (containsKey(key)) {
   		return get(key).asString();
   	} else {
   		return s;
+  	}
+  }
+  
+  @Override
+  public Date getDate(String key) throws JsonCastException {
+  	return get(key).asDate();
+  }
+  
+  public Date getDate(String key, Date date) throws JsonCastException {
+  	if (map.containsKey(key)) {
+  		return get(key).asDate();
+  	} else {
+  		return date;
   	}
   }
   
@@ -225,7 +244,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   }
   
   public JsonValue put(String key, Date date) {
-  	return map.put(key, new JsonString(ISO8601_DATE_FORMAT.format(date)));
+  	return map.put(key, new JsonDate(date));
   }
 
   public JsonValue put(String key, Number value) {
@@ -295,7 +314,11 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   }
   
   public static JsonValue parse(String jsonString) throws JsonParseException {
-    return parseValue(0, jsonString.length(), jsonString);
+  	if (jsonString.length() == 0) {
+  		return new JsonString("");
+  	} else {
+  		return parseValue(0, jsonString.length(), jsonString);
+  	}
   }
   
   private static int nextValueString(int i, final int j, String str) throws JsonParseException {
@@ -347,9 +370,27 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   
   private static JsonValue parseValue(int i, int j, String str) throws JsonParseException {
     switch (str.charAt(i)) {
-      case 't': return new JsonBoolean(true);
-      case 'f': return new JsonBoolean(false);
-      case 'n': return JsonValue.JSON_NULL;
+      case 't': {
+      	if (str.substring(i, i+4).equals("true")) {
+      		return new JsonBoolean(true);
+      	} else {
+      		throw new JsonParseException();
+      	}
+      }
+      case 'f': {
+      	if (str.substring(i, i+5).equals("false")) {
+      		return new JsonBoolean(false);
+      	} else {
+      		throw new JsonParseException();
+      	}
+      }
+      case 'n': {
+      	if (str.substring(i, i+4).equals("null")) {
+      		return JsonValue.JSON_NULL;
+      	} else {
+      		throw new JsonParseException();
+      	}
+      }
       case '-':
       case '0': case '1': case '2': case '3': case '4':
       case '5': case '6': case '7': case '8': case '9': {
@@ -361,7 +402,13 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
       }
       case '"': {
         String substr = str.substring(i+1, j-1);
-        return new JsonString(substr.replace("\\\"", "\""));
+        try {
+					return new JsonDate(substr); // is this string a date?
+				} catch (ParseException e) {
+					substr = substr.replace("\\\\", "\\"); // '\\' -> '\'
+          substr = substr.replace("\\\"", "\""); // '\"' -> '"'
+          return new JsonString(substr);
+				}
       }
       case '{': {
         JsonObject obj = new JsonObject();
@@ -396,7 +443,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
         }
         return array;
       }
-      default: throw new JsonParseException();
+      default: throw new JsonParseException("Unknown character.");
     }
   }
 

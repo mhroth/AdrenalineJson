@@ -27,23 +27,28 @@
 
 package ch.section6.json;
 
+import java.util.Date;
+
 /** An interface rendering a {@link JsonArray} immutable. */
 public interface ImmutableJsonArray {
 
-	/** A convenience function to return the keyed value as a {@link Boolean}. */
+	/** A convenience function to return the indexed value as a {@link String}. */
   public String getString(int index) throws JsonCastException;
   
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
+  /** A convenience function to return the indexed value as a {@link Number}. */
   public Number getNumber(int index) throws JsonCastException;
   
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
+  /** A convenience function to return the indexed value as a <code>boolean</code>. */
   public boolean getBoolean(int index) throws JsonCastException;
   
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
+  /** A convenience function to return the indexed value as a {@link JsonArray}. */
   public ImmutableJsonArray getArray(int index) throws JsonCastException;
   
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
+  /** A convenience function to return the indexed value as a {@link JsonObject}. */
   public ImmutableJsonObject getObject(int index) throws JsonCastException;
+  
+  /** A convenience function to return the indexed value as a {@link Date}. */
+  public Date getDate(int index) throws JsonCastException;
   
   public int size();
   
