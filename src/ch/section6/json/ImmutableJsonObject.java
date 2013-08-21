@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * Copyright (c) 2012,2013 Martin Roth (mhroth@section6.ch)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,50 +29,50 @@ package ch.section6.json;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
-/** An interface rendering a {@link JsonObject} immutable. */
+/**
+ * An interface rendering a {@link JsonObject} immutable. It is effectively a subset of the
+ * <code>Map</code> interface.
+ */
 public interface ImmutableJsonObject {
-	
+
 	/** A convenience function to return the keyed value as a {@link String}. */
-  public String getString(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  /** A convenience function to return the keyed value as a {@link Boolean}. */
-  public boolean getBoolean(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  /** A convenience function to return the keyed value as a {@link JsonObject}. */
-  public ImmutableJsonObject getObject(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  /** A convenience function to return the keyed value as a {@link JsonArray}. */
-  public ImmutableJsonArray getArray(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  /** A convenience function to return the keyed value as a {@link Number}. */
-  public Number getNumber(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  /** A convenience function to return the keyed value as a {@link Date}. */
-  public Date getDate(String key)
-  		throws JsonCastException, UnknownKeyException;
-  
-  public boolean isEmpty();
-  
-  public Set<String> keySet();
-  
-  public int size();
-  
-  public Collection<JsonValue> values();
-  
-  /** Returns this {@link JsonObject} as an {@link ImmutableJsonObject}. */
-  public ImmutableJsonObject asImmutable();
-  
-  /** @see JsonValue */
-  public JsonValue copy();
-  
-  /** @see JsonValue */
-  public String toString(int indent);
+	public String getString(String key) throws JsonCastException, UnknownKeyException;
+
+	/** A convenience function to return the keyed value as a {@link Boolean}. */
+	public boolean getBoolean(String key) throws JsonCastException, UnknownKeyException;
+
+	/** A convenience function to return the keyed value as a {@link JsonObject}. */
+	public ImmutableJsonObject getObject(String key) throws JsonCastException, UnknownKeyException;
+
+	/** A convenience function to return the keyed value as a {@link JsonArray}. */
+	public ImmutableJsonArray getArray(String key) throws JsonCastException, UnknownKeyException;
+
+	/** A convenience function to return the keyed value as a {@link Number}. */
+	public Number getNumber(String key) throws JsonCastException, UnknownKeyException;
+
+	/** A convenience function to return the keyed value as a {@link Date}. */
+	public Date getDate(String key) throws JsonCastException, UnknownKeyException;
+
+	public boolean isEmpty();
+
+	public Set<String> keySet();
+
+	public Set<Map.Entry<String,JsonValue>> entrySet();
+
+	public int size();
+
+	public Collection<JsonValue> values();
+
+	/** Returns this {@link JsonObject} as an {@link ImmutableJsonObject}. */
+	public ImmutableJsonObject asImmutable();
+
+	/** @see JsonValue */
+	public JsonValue copy();
+
+	/** @see JsonValue */
+	public String toString(int indent);
 
 }

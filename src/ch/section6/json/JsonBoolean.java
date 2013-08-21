@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * Copyright (c) 2012,2013 Martin Roth (mhroth@section6.ch)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,56 +32,56 @@ import java.util.List;
 /** A JSON representation of a {@link Boolean}. */
 public final class JsonBoolean extends JsonValue {
 
-  private final Boolean bool;
-  
-  public JsonBoolean(Boolean bool) {
-    if (bool == null) throw new IllegalArgumentException();
-    this.bool = bool;
-  }
-  
-  @Override
-  protected void appendTokenList(List<String> tokenList) {
-    tokenList.add(toString());
-  }
-  
-  @Override
-  public String toString() {
-    return bool ? "true" : "false";
-  }
+	private final boolean bool;
 
-  @Override
-  public Type getType() {
-    return Type.BOOLEAN;
-  }
+	public JsonBoolean(Boolean bool) {
+		if (bool == null) throw new NullPointerException("Boolean must be non-null.");
+		this.bool = bool;
+	}
 
-  @Override
-  public Number asNumber() throws JsonCastException {
-    return bool ? 1 : 0;
-  }
+	@Override
+	protected void appendTokenList(List<String> tokenList) {
+		tokenList.add(toString());
+	}
 
-  @Override
-  public String asString() throws JsonCastException {
-    return toString();
-  }
-  
-  public boolean asBoolean() {
-    return bool;
-  }
-  
-  @Override
-  public boolean equals(Object o) {
-    if (o != null) {
-      if (o instanceof JsonString) {
-        JsonBoolean jsonBoolean = (JsonBoolean) o;
-        return bool.equals(jsonBoolean.bool);
-      }
-    }
-    return false;
-  }
-  
-  @Override
-  public int hashCode() {
-    return bool.hashCode();
-  }
+	@Override
+	public String toString() {
+		return bool ? "true" : "false";
+	}
+
+	@Override
+	public Type getType() {
+		return Type.BOOLEAN;
+	}
+
+	@Override
+	public Number asNumber() {
+		return bool ? 1 : 0;
+	}
+
+	@Override
+	public String asString() {
+		return toString();
+	}
+
+	public boolean asBoolean() {
+		return bool;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o != null) {
+			if (o instanceof JsonString) {
+				JsonBoolean jsonBoolean = (JsonBoolean) o;
+				return bool == jsonBoolean.bool;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return bool ? 1 : 0;
+	}
 
 }

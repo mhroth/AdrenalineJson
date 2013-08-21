@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * Copyright (c) 2012,2013 Martin Roth (mhroth@section6.ch)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,56 +29,65 @@ package ch.section6.json;
 
 import java.util.Date;
 
-/** An interface rendering a {@link JsonArray} immutable. */
+/**
+ * An interface rendering a {@link JsonArray} immutable. It is effectively a subset of the
+ * <code>List</code> interface.
+ */
 public interface ImmutableJsonArray {
 
 	/** A convenience function to return the indexed value as a {@link String}. */
-  public String getString(int index) throws JsonCastException;
-  
-  /** A convenience function to return the indexed value as a {@link Number}. */
-  public Number getNumber(int index) throws JsonCastException;
-  
-  /** A convenience function to return the indexed value as a <code>boolean</code>. */
-  public boolean getBoolean(int index) throws JsonCastException;
-  
-  /** A convenience function to return the indexed value as a {@link JsonArray}. */
-  public ImmutableJsonArray getArray(int index) throws JsonCastException;
-  
-  /** A convenience function to return the indexed value as a {@link JsonObject}. */
-  public ImmutableJsonObject getObject(int index) throws JsonCastException;
-  
-  /** A convenience function to return the indexed value as a {@link Date}. */
-  public Date getDate(int index) throws JsonCastException;
-  
-  public int size();
-  
-  public boolean isEmpty();
-  
-  /** @see JsonValue */
-  public String toString(int indent);
-  
-  /** @see JsonValue */
-  public JsonValue copy();
-  
-  /** Returns this {@link JsonArray} as an {@link ImmutableJsonArray}. */
-  public ImmutableJsonArray asImmutable();
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Strings}.
-   * Elements are cast to strings if necessary.
-   */
-  public Iterable<String> stringIterable();
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Boolean}s.
-   * Elements are cast to booleans if necessary.
-   */
-  public Iterable<Boolean> booleanIterable();
-  
-  /**
-   * Returns an {@link Iterable} for iterating across {@link Number}s.
-   * Elements are cast to numbers if necessary.
-   */
-  public Iterable<Number> numberIterable();
-	
+	public String getString(int index) throws JsonCastException;
+
+	/** A convenience function to return the indexed value as a {@link Number}. */
+	public Number getNumber(int index) throws JsonCastException;
+
+	/**
+	 * A convenience function to return the indexed value as a <code>boolean</code>.
+	 */
+	public boolean getBoolean(int index) throws JsonCastException;
+
+	/**
+	 * A convenience function to return the indexed value as a {@link JsonArray} .
+	 */
+	public ImmutableJsonArray getArray(int index) throws JsonCastException;
+
+	/**
+	 * A convenience function to return the indexed value as a {@link JsonObject}.
+	 */
+	public ImmutableJsonObject getObject(int index) throws JsonCastException;
+
+	/** A convenience function to return the indexed value as a {@link Date}. */
+	public Date getDate(int index) throws JsonCastException;
+
+	public int size();
+
+	public boolean isEmpty();
+
+	/** @see JsonValue */
+	public String toString(int indent);
+
+	/** @see JsonValue */
+	public JsonValue copy();
+
+	/** Returns this {@link JsonArray} as an {@link ImmutableJsonArray}. */
+	public ImmutableJsonArray asImmutable();
+
+	/**
+	 * Returns an {@link Iterable} for iterating across {@link Strings}. Elements are cast to
+	 * strings if necessary.
+	 */
+	public Iterable<String> stringIterable();
+
+	/**
+	 * Returns an {@link Iterable} for iterating across {@link Boolean}s. Elements are cast to
+	 * booleans if necessary.
+	 */
+	public Iterable<Boolean> booleanIterable();
+
+	/**
+	 * Returns an {@link Iterable} for iterating across {@link Number}s. Elements are cast to
+	 * numbers if necessary.
+	 */
+	public Iterable<Number> numberIterable();
+
 }

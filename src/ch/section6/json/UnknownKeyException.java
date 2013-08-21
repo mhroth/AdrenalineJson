@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * Copyright (c) 2012,2013 Martin Roth (mhroth@section6.ch)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,11 @@ package ch.section6.json;
 public class UnknownKeyException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public UnknownKeyException(Exception e) {
 		super(e);
 	}
-	
+
 	public UnknownKeyException(String message) {
 		super(message);
 	}

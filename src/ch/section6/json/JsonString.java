@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, Martin Roth (mhroth@section6.ch)
+ * Copyright (c) 2012,2013 Martin Roth (mhroth@section6.ch)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,77 +35,82 @@ import java.util.List;
 public class JsonString extends JsonValue {
 
 	/** The original string. */
-  private final String string;
-  
-  /** The JSON-escaped string. */
-  private final String escapedString;
-  
-  public JsonString(String string) {
-    if (string == null) throw new IllegalArgumentException();
-    this.string = string;
-    
-    // escape all illegal JSON string sequences
-    escapedString = jsonEscape(string);
-  }
+	private final String string;
 
-  @Override
-  public Type getType() {
-    return Type.STRING;
-  }
-  
-  @Override
-  public String asString() {
-    return string;
-  }
+	/** The JSON-escaped string. */
+	private final String escapedString;
 
-  @Override
-  public Number asNumber() {
-    try {
-      return Double.parseDouble(string);
-    } catch (NumberFormatException e) {
-      throw new JsonCastException(e);
-    }
-  }
-  
-  @Override
-  public Date asDate() {
-  	try {
-			return JsonDate.asDate(string);
-		} catch (ParseException e) {
+	public JsonString(String string) {
+		if (string == null) { throw new NullPointerException("String argument may not be null."); }
+		this.string = string;
+
+		// escape all illegal JSON string sequences
+		escapedString = jsonEscape(string);
+	}
+
+	@Override
+	public Type getType() {
+		return Type.STRING;
+	}
+
+	@Override
+	public String asString() {
+		return string;
+	}
+
+	@Override
+	public Number asNumber() {
+		try {
+			return Double.parseDouble(string);
+		}
+		catch (NumberFormatException e) {
 			throw new JsonCastException(e);
 		}
-  }
-  
-  /** JSON-escape a string. */
-  public static String jsonEscape(String s) {
-  	s = s.replace("\\", "\\\\"); // escape '\'
-    s = s.replace("\"", "\\\""); // escape '"'
-    return String.format("\"%s\"", s);
-  }
+	}
 
-  @Override
-  protected void appendTokenList(List<String> tokenList) {
-    tokenList.add(toString());
-  }
-  
-  @Override
-  public String toString() {
-  	return escapedString;
-  }
-  
-  @Override
-  public boolean equals(Object o) {
-    if (o != null) {
-      if (o instanceof JsonString) {
-        JsonString jsonString = (JsonString) o;
-        return string.equals(jsonString.string);
-      }
-    }
-    return false;
-  }
-  
-  @Override
-  public int hashCode() {
-    return string.hashCode();
-  }
+	@Override
+	public Date asDate() {
+		try {
+			return JsonDate.asDate(string);
+		}
+		catch (ParseException e) {
+			throw new JsonCastException(e);
+		}
+	}
+
+	/** JSON-escape a string. */
+	public static String jsonEscape(String s) {
+		if (s == null) {
+			throw new NullPointerException("String argument must be non-null");
+		}
+		s = s.replace("\\", "\\\\"); // escape '\'
+		s = s.replace("\"", "\\\""); // escape '"'
+		return String.format("\"%s\"", s);
+	}
+
+	@Override
+	protected void appendTokenList(List<String> tokenList) {
+		tokenList.add(toString());
+	}
+
+	@Override
+	public String toString() {
+		return escapedString;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o != null) {
+			if (o instanceof JsonString) {
+				JsonString jsonString = (JsonString) o;
+				return string.equals(jsonString.string);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return string.hashCode();
+	}
 }
