@@ -4,19 +4,19 @@ This is a Java library for manipulating JSON. There are many like it. This one i
 
 ## Why use it?
  * It has a nice and clean interface.
- * It is small (< 25KB).
  * No external dependencies.
  * Compatible with Java 1.6 and above.
  * Parses and produces standard JSON. No funny stuff.
+ * Thread safe.
  * [BSD license](http://www.w3.org/Consortium/Legal/2008/03-bsd-license.html). Just use it. I don't care what you do with it.
 
 ### Why not use it?
   * It doesn't convert arbitrary Java objects into JSON. [[Gson](http://code.google.com/p/google-gson/)]
-  * It hasn't been optimised for speed. That's not to say that it's slow. It's just that I haven't profiled it, and it's not a priority. [[Json-Smart](http://code.google.com/p/json-smart/)]
+  * It hasn't been optimised for speed. That's not to say that it's slow. It's just that I haven't profiled it, and it's not a priority. [[Json-Smart](http://code.google.com/p/json-smart/)]. It tends to be *fast enough*.
   * It doesn't decode or encode directly with streams.
   * It doesn't have anything to do with XML or SAX. [[Jackson](http://jackson.codehaus.org/)]
 
-AdrenalineJson doesn't have all of the features of other libraries, but that's ok because you probably aren't using them anyway. Adrenaline goes in, gets the job done as quickly as possible, and leaves you to get on with things.
+AdrenalineJson doesn't have all of the features of other libraries, but that's ok because you probably aren't using them anyway. Adrenaline goes in, gets the job done, and leaves you to get on with things.
 
 
 # Examples
@@ -36,10 +36,12 @@ obj.put("otherobj", new JsonObject());
 System.out.println(obj);
 ```
 yields:
+
 ```
 {"hello":"world","response":42,"byebye":false,"otherobj":{}}
 ```
 Of course it does pretty print too.
+
 ```Java
 System.out.println(obj.toString(2));
 ```
@@ -53,18 +55,23 @@ System.out.println(obj.toString(2));
 ```
 
 Normally when retrieving values from the map, a `JsonValue` object is returned. This can be annoying if you already know what the object type is.
+
 ```Java
 String str = obj.getString("hello");
 double d = obj.getNumber("response").doubleValue();
 boolean b = obj.get("byebye").asBoolean();
 ```
+
 You can even dynamially cast `JsonValue`s as needed.
+
 ```Java
 boolean b = obj.get("byebye").asBoolean();
 String str = obj.get("byebye").asString();
 System.out.println(str);
 ```
+
 yields:
+
 ```Java
 false
 ```
@@ -72,6 +79,7 @@ false
 ## JsonArray
 
 A `JsonArray` is simply a list of `JsonValue`s. Really, it implements the `List<JsonValue>` interface. Use it wherever you use `List`s.
+
 ```Java
 JsonArray array = new JsonArray();
 array.add(true);
@@ -81,12 +89,15 @@ array.add(new JsonArray());
 array.add(new JsonObject());
 System.out.println(array);
 ```
+
 yields:
+
 ```Java
 [true,"two",3,[],{}]
 ```
 
 But most of the time there is only type of object in the array, and you know what is.
+
 ```Java
 JsonArray array = new JsonArray();
 array.add("one");
@@ -98,7 +109,9 @@ for (String s : array.stringIterable()) {
   System.out.println(s);
 }
 ```
+
 yields:
+
 ```Java
 one
 two
@@ -118,14 +131,17 @@ for (Map.Entry<String,JsonValue> e : jsonObj.entrySet()) {
 }
 ```
 yields:
+
 ```Java
 hello: world
 ```
+
 `JsonObject.parse(...)` can throw a `JsonParseException`, but it is a `RuntimeException` and it isn't necessary to catch it if you don't expect anything bad.
 
 ## getByPath
 
 `JsonObject` has a method `JsonValue getByPath(String path)` which allows nested values to be retrieved by a URL-style path. For example, given an object:
+
 ```JSON
 {
   "a": {
