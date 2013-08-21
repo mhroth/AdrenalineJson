@@ -43,19 +43,14 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
     list = new ArrayList<JsonValue>();
   }
   
-  public JsonArray(Number... values) {
-    list = new ArrayList<JsonValue>();
-    add(values);
-  }
-  
-  public JsonArray(String... values) {
-    list = new ArrayList<JsonValue>();
-    add(values);
-  }
-  
   public JsonArray(Object... values) {
-  	list = new ArrayList<JsonValue>();
+  	list = new ArrayList<JsonValue>(values.length);
   	add(values);
+  }
+  
+  public JsonArray(Collection<?> values) {
+  	list = new ArrayList<JsonValue>(values.size());
+  	add(values.toArray());
   }
   
   @Override
@@ -119,20 +114,20 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
   		} else if (o instanceof Boolean) {
   			add((Boolean) o);
   		} else if (o == null) {
-  			add(JsonValue.JSON_NULL);
+  			add(getNull());
   		} else if (o instanceof JsonObject) {
   			add((JsonObject) o);
   		} else if (o instanceof JsonArray) {
   			add((JsonArray) o);
   		} else {
-  			throw new UnsupportedOperationException();
+  			throw new JsonCastException(String.format("Unknown object type: %s", o.getClass()));
   		}
   	}
   	return true;
   }
   
-  public boolean add(Boolean bool) {
-    return list.add(new JsonBoolean(bool));
+  public boolean add(boolean b) {
+    return list.add(getBoolean(b));
   }
 
   /** A convenience method for adding any number of <code>Number</code>s to an array. */

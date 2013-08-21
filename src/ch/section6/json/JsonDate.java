@@ -46,7 +46,8 @@ public class JsonDate extends JsonValue {
 		return dateString;
 	}
 	
-	public static Date asDate(String s) throws ParseException {
+	// this method is synchronized because there is only one DateFormat object
+	public static synchronized Date asDate(String s) throws ParseException {
 		return ISO8601_DATE_FORMAT.parse(s);
 	}
 	

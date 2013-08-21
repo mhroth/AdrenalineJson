@@ -55,7 +55,11 @@ public abstract class JsonValue {
   }
   
   /** A {@link JsonNull} singleton. */
-  public static final JsonNull JSON_NULL = new JsonNull();
+  protected static final JsonNull JSON_NULL = new JsonNull();
+  
+  protected static final JsonBoolean JSON_TRUE = new JsonBoolean(true);
+  
+  protected static final JsonBoolean JSON_FALSE = new JsonBoolean(false);
 
   public String toString(int indent) {
     if (indent < 0) throw new IllegalArgumentException();
@@ -104,6 +108,16 @@ public abstract class JsonValue {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < x; i++) sb.append(" ");
     return sb.toString();
+  }
+  
+  /** Returns a static reference to JSON <code>null</code>. */
+  public static JsonNull getNull() {
+  	return JSON_NULL;
+  }
+  
+  /** Returns a static reference to JSON <code>true</code> or <code>false</code>. */
+  public static JsonBoolean getBoolean(boolean b) {
+  	return b ? JSON_TRUE : JSON_FALSE;
   }
   
   /** Returns a deep copy of this value. */

@@ -32,15 +32,36 @@ import java.util.List;
 /** A JSON representation of a {@link Number}. */
 public class JsonNumber extends JsonValue {
 
-  private final Number number;
+  private final long value;
   
-  public JsonNumber(Number number) {
-    if (number == null) throw new IllegalArgumentException();
-    this.number = number.doubleValue();
+  /**
+   * <code>true</code> if this value should be treated as an integral value.
+   * <code>false</code> if this value should be treated as real-valued.
+   */
+  private final boolean isInteger;
+
+  public JsonNumber(double value) {
+  	this.value = Double.doubleToLongBits(value);
+  	isInteger = false;
+  }
+  
+  public JsonNumber(long value) {
+  	this.value = value;
+  	isInteger = true;
   }
   
   protected JsonNumber(String str) throws NumberFormatException {
-    number = Double.parseDouble(str);
+  	value = Double.doubleToLongBits(Double.parseDouble(str));
+  	isInteger = false;
+  }
+  
+  public JsonNumber(Number value) {
+  	isInteger = (value.doubleValue() == ((double) value.longValue()));
+  	this.value = isInteger ? value.longValue() : Double.doubleToLongBits(value.doubleValue());
+  }
+  
+  public boolean isInteger() {
+  	return isInteger;
   }
 
   @Override
@@ -50,12 +71,17 @@ public class JsonNumber extends JsonValue {
   
   @Override
   public String asString() {
-    return Double.toString(number.doubleValue());
+  	return isInteger ? Long.toString(value) : Double.toString(Double.longBitsToDouble(value));
   }
 
   @Override
   public Number asNumber() {
-    return number;
+  	return isInteger ? value : Double.longBitsToDouble(value);
+  }
+  
+  @Override
+  public boolean asBoolean() {
+  	return isInteger ? (value != 0L) : (Double.longBitsToDouble(value) != 0.0);
   }
 
   @Override
@@ -65,9 +91,7 @@ public class JsonNumber extends JsonValue {
   
   @Override
   public String toString() {
-    long num = number.longValue();
-    return ((double) num == number.doubleValue())
-        ? Long.toString(num) : Double.toString(number.doubleValue());
+  	return isInteger ? Long.toString(value) : Double.toString(Double.longBitsToDouble(value));
   }
   
   @Override
@@ -75,7 +99,7 @@ public class JsonNumber extends JsonValue {
     if (o != null) {
       if (o instanceof JsonNumber) {
         JsonNumber jsonNumber = (JsonNumber) o;
-        return number.equals(jsonNumber.number);
+        return (value == jsonNumber.value);
       }
     }
     return false;
@@ -83,7 +107,7 @@ public class JsonNumber extends JsonValue {
   
   @Override
   public int hashCode() {
-    return number.hashCode();
+  	return (int) ((value >>> 32) ^ value);
   }
 
 }

@@ -127,6 +127,14 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   	}
   }
   
+  public JsonValue get(Object key, JsonValue def) {
+  	if (map.containsKey(key)) {
+  		return map.get(key);
+  	} else {
+  		return (def != null) ? def : JsonValue.JSON_NULL;
+  	}
+  }
+  
   /** Return a value according to its path, e.g. <code>/a/b/0/c</code>. */
   public JsonValue getByPath(String path) {
   	JsonValue value = this;
@@ -251,29 +259,22 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
     return map.put(key, new JsonNumber(value));
   }
   
-  public JsonValue put(String key, Boolean value) {
-    return map.put(key, new JsonBoolean(value));
+  public JsonValue put(String key, boolean value) {
+    return map.put(key, getBoolean(value));
   }
   
   /**
-   * Puts an array of <code>Number</code>s into the map, with the array automatically converted to
-   * a {@link JsonArray}.
+   * Puts an array of <code>Object</code>s into the map, with the array automatically converted to
+   * a {@link JsonArray}. The type of the objects is automatically detected and converted into
+   * the corresponding JSON type.
    */
-  public JsonValue put(String key, Number[] values) {
-    return map.put(key, new JsonArray(values));
-  }
-
-  /**
-   * Puts an array of <code>String</code>s into the map, with the array automatically converted to
-   * a {@link JsonArray}.
-   */
-  public JsonValue put(String key, String[] values) {
+  public JsonValue put(String key, Object... values) {
     return map.put(key, new JsonArray(values));
   }
 
   @Override
   public JsonValue put(String key, JsonValue value) {
-    return map.put(key, value);
+    return map.put(key, (value != null) ? value : JSON_NULL);
   }
   
   @Override
@@ -314,7 +315,9 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   }
   
   public static JsonValue parse(String jsonString) throws JsonParseException {
-  	if (jsonString.length() == 0) {
+  	if (jsonString == null) {
+  		return JsonValue.JSON_NULL;
+  	} else if (jsonString.isEmpty()) {
   		return new JsonString("");
   	} else {
   		return parseValue(0, jsonString.length(), jsonString);
