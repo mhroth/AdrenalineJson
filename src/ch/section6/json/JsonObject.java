@@ -138,7 +138,7 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   /** Return a value according to its path, e.g. <code>/a/b/0/c</code>. */
   public JsonValue getByPath(String path) {
   	JsonValue value = this;
-  	if (path != null && !path.isEmpty()) { // early exist condition
+  	if (path != null && !path.isEmpty()) { // early exit condition
   		for (String p : path.split("/")) {
     		if (p.isEmpty()) continue;
     		switch (value.getType()) {
@@ -150,6 +150,31 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
   	}
   	return value;
   }
+
+	/**
+	 * Set a value according to its path.
+	 * 
+	 * @param path
+	 *          A non-null string of the format <code>/a/b/0/c</code>.
+	 * @param newValue
+	 *          The new value.
+	 * @return <code>true</code> if successful. <code>false</code> otherwise.
+	 */
+	public boolean setByPath(String path, JsonValue newValue) {
+		if (path != null && !path.isEmpty()) {
+			int lastSlash = path.lastIndexOf("/");
+			String lastPath = path.substring(lastSlash+1);
+
+			JsonValue value = getByPath(path.substring(0, lastSlash));
+			switch (value.getType()) {
+				case MAP: value.asMap().put(lastPath, newValue); break;
+				case ARRAY: value.asArray().set(Integer.parseInt(lastPath), newValue); break;
+				default: throw new IllegalArgumentException(String.format("Unknown path: %s", path));
+			}
+			
+			return true;
+		} else return false;
+	}
 
   @Override
   public String getString(String key) throws JsonCastException {
