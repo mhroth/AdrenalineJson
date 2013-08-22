@@ -49,13 +49,13 @@ public abstract class JsonValue implements Cloneable {
 	}
 
 	/** A {@link JsonNull} singleton. */
-	private static final JsonNull JSON_NULL = new JsonNull();
+	protected static final JsonNull JSON_NULL = new JsonNull();
 
 	/** A <code>true</code> <code>JsonBoolean</code> singleton. */
-	private static final JsonBoolean JSON_TRUE = new JsonBoolean(true);
+	protected static final JsonBoolean JSON_TRUE = new JsonBoolean(true);
 
 	/** A <code>false</code> <code>JsonBoolean</code> singleton. */
-	private static final JsonBoolean JSON_FALSE = new JsonBoolean(false);
+	protected static final JsonBoolean JSON_FALSE = new JsonBoolean(false);
 
 	/** Returns a pretty-printed <code>String</code> of this value with the given indent. */
 	public String toString(int indent) {
