@@ -127,7 +127,7 @@ String jsonString = "{\"hello\":\"world\"}";
 JsonValue value = JsonObject.parse(jsonString);
 JsonObject jsonObj = value.asMap();
 for (Map.Entry<String,JsonValue> e : jsonObj.entrySet()) {
-  System.out.println(e.getKey + ": " + e.getValue());
+  System.out.println(e.getKey() + ": " + e.getValue());
 }
 ```
 yields:
