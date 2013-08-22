@@ -34,8 +34,7 @@ public final class JsonBoolean extends JsonValue {
 
 	private final boolean bool;
 
-	public JsonBoolean(Boolean bool) {
-		if (bool == null) throw new NullPointerException("Boolean must be non-null.");
+	public JsonBoolean(boolean bool) {
 		this.bool = bool;
 	}
 
