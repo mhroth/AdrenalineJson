@@ -33,18 +33,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class JsonDate extends JsonValue {
+public final class JsonDate extends JsonValue {
 
 	/** An ISO 8601 time formatter. */
-	protected static final DateFormat ISO8601_DATE_FORMAT = new SimpleDateFormat(
-			"yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	protected static final DateFormat ISO8601_DATE_FORMAT =
+			new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 	private final Date date;
 
 	private final String dateString;
 
 	public JsonDate(Date date) {
-		if (date == null) { throw new NullPointerException("Date argument must be non-null."); }
+		if (date == null) {
+			throw new NullPointerException("Date argument must be non-null.");
+		}
 		this.date = date;
 		dateString = toIso8601String(date);
 	}

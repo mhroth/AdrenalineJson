@@ -419,9 +419,10 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
         while (str.charAt(i) != '}') {
           int k = nextValueString(i, j, str);
           JsonValue key = parseValue(i, k, str);
-          if (key.getType() != JsonValue.Type.STRING)
+          if (key.getType() != JsonValue.Type.STRING) {
             throw new JsonParseException(
                 "Expected a string as a map key. Instead, parsed a " + key.getType() + ".");
+          }
           i = skipWhitespace(k, str);
           if (str.charAt(i) != ':') throw new JsonParseException();
           i = skipWhitespace(i+1, str);
