@@ -249,14 +249,24 @@ public abstract class JsonValue implements Cloneable {
 	 */
 	protected boolean setByPath(String path, Object o)
 			throws IllegalArgumentException, NumberFormatException {
-		if (path != null && !path.isEmpty()) {
+		if (path != null) {
+			JsonValue newValue = objectToJsonValue(o);
+			
+			if (path.isEmpty() || path.equals("/")) {
+				if (this.getType() == Type.MAP && newValue.getType() == Type.MAP) {
+					this.asMap().putAll(newValue.asMap());
+					return true;
+				} else if (this.getType() == Type.ARRAY && newValue.getType() == Type.ARRAY) {
+					this.asArray().addAll(newValue.asArray());
+					return true;
+				}
+			}
+	
 			if (path.endsWith("/")) {
 				throw new IllegalArgumentException(
 						String.format("Path %s cannot end with trailing \"/\".", path));
 			}
-			
-			JsonValue newValue = objectToJsonValue(o);
-			
+
 			int lastSlash = path.lastIndexOf("/");
 			String lastPath = path.substring(lastSlash+1);
 
