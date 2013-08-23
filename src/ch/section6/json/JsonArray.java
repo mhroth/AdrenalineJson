@@ -113,33 +113,6 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
 		return list.add(e);
 	}
 	
-	public boolean addAll(Object... values) {
-		list.ensureCapacity(list.size() + values.length);
-		for (Object o : values) {
-			addObject(o);
-		}
-		return true;
-	}
-	
-	public void addObject(Object o) {
-		if (o == null) {
-			list.add(JSON_NULL);
-		} else if (o instanceof JsonValue) {
-			list.add((JsonValue) o);
-		} else  if (o instanceof String) {
-			list.add(new JsonString((String) o));
-		} else if (o instanceof Number) {
-			list.add(new JsonNumber((Number) o));
-		} else if (o instanceof Boolean) {
-			list.add(JsonValue.getBoolean((Boolean) o));
-		} else if (o instanceof Date) {
-			list.add(new JsonDate((Date) o));
-		} else {
-			throw new JsonCastException(
-					String.format("Unknown object type: %s", o.getClass().getCanonicalName()));
-		}
-	}
-
 	public boolean add(Boolean b) {
 		return list.add(JsonValue.getBoolean(b));
 	}
@@ -147,7 +120,15 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
 	public boolean add(Date date) {
 		return list.add(new JsonDate(date));
 	}
-
+	
+	public boolean add(String string) {
+		return list.add(new JsonString(string));
+	}
+	
+	public boolean add(Number n) {
+		return list.add(new JsonNumber(n));
+	}
+	
 	@Override
 	public void add(int index, JsonValue element) {
 		if (index >= list.size()) {
@@ -167,6 +148,14 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
 	@Override
 	public boolean addAll(int index, Collection<? extends JsonValue> c) {
 		return list.addAll(index, c);
+	}
+	
+	public boolean addAll(Object... values) {
+		list.ensureCapacity(list.size() + values.length);
+		for (Object o : values) {
+			list.add(objectToJsonValue(o));
+		}
+		return true;
 	}
 
 	@Override
@@ -232,6 +221,16 @@ public final class JsonArray extends JsonValue implements List<JsonValue>, Immut
 	@Override
 	public Iterator<JsonValue> iterator() {
 		return list.iterator();
+	}
+	
+	@Override
+	public JsonValue getByPath(String path) throws IllegalArgumentException, NumberFormatException {
+		return super.getByPath(path);
+	}
+	
+	@Override
+	public boolean setByPath(String path, Object o) throws IllegalArgumentException, NumberFormatException {
+		return super.setByPath(path, o);
 	}
 
 	/**

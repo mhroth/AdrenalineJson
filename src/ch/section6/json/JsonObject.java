@@ -138,31 +138,14 @@ public final class JsonObject extends JsonValue implements Map<String,JsonValue>
 		return map.containsKey(key) ? map.get(key) : defaultValue;
 	}
 
-	/**
-	 * Return a value according to its path, e.g. <code>/a/b/0/c</code>.
-	 * 
-	 * @throws IllegalArgumentException
-	 *             If no value could be found at that path.
-	 * @throws NumberFormatException
-	 *             If an array index is expected but the next path address is
-	 *             not an integer.
-	 */
+	@Override
 	public JsonValue getByPath(String path) throws IllegalArgumentException, NumberFormatException {
-		JsonValue value = this;
-		if (path != null && !path.isEmpty()) { // early exit condition
-			for (String p : path.split("/")) {
-				if (p.isEmpty()) continue; // ignore ""
-				switch (value.getType()) {
-					case MAP: value = value.asMap().get(p); break;
-					case ARRAY: value = value.asArray().get(Integer.parseInt(p)); break;
-					default: {
-						throw new IllegalArgumentException(
-								String.format("Unknown path: %s", path));
-					}
-				}
-			}
-		}
-		return value;
+		return super.getByPath(path);
+	}
+	
+	@Override
+	public boolean setByPath(String path, Object o) throws IllegalArgumentException, NumberFormatException {
+		return super.setByPath(path, o);
 	}
 
 	@Override

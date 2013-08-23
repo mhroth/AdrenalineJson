@@ -184,6 +184,94 @@ public abstract class JsonValue implements Cloneable {
 		throw new JsonCastException(String.format("JsonValue %s cannot be cast to a date.",
 				toString()));
 	}
+	
+	/**
+	 * Casts a generic <code>Object</code> to a <code>JsonValue</code>, if possible. Converts a
+	 * <code>null</code> object to <code>JsonNull</code>.
+	 * 
+	 * @throws JsonCastException
+	 *           If the cast is not possible.
+	 */
+	protected static JsonValue objectToJsonValue(Object o) {
+		if (o == null) {
+			return JSON_NULL;
+		} else if (o instanceof JsonValue) {
+			return (JsonValue) o;
+		} else  if (o instanceof String) {
+			return new JsonString((String) o);
+		} else if (o instanceof Number) {
+			return new JsonNumber((Number) o);
+		} else if (o instanceof Boolean) {
+			return JsonValue.getBoolean((Boolean) o);
+		} else if (o instanceof Date) {
+			return new JsonDate((Date) o);
+		} else {
+			throw new JsonCastException(
+					String.format("Uncastable object type: %s", o.getClass().getCanonicalName()));
+		}
+	}
+	
+	/**
+	 * Return a value according to its path, e.g. <code>/a/b/0/c</code>.
+	 * 
+	 * @throws IllegalArgumentException
+	 *             If no value could be found at that path.
+	 * @throws NumberFormatException
+	 *             If an array index is expected but the next path address is
+	 *             not an integer.
+	 */
+	protected JsonValue getByPath(String path) throws IllegalArgumentException, NumberFormatException {
+		JsonValue value = this;
+		if (path != null && !path.isEmpty()) { // early exit condition
+			for (String p : path.split("/")) {
+				if (p.isEmpty()) continue; // ignore ""
+				switch (value.getType()) {
+					case MAP: value = value.asMap().get(p); break;
+					case ARRAY: value = value.asArray().get(Integer.parseInt(p)); break;
+					default: {
+						throw new IllegalArgumentException(
+								String.format("Unknown path: %s", path));
+					}
+				}
+			}
+		}
+		return value;
+	}
+	
+	/**
+	 * Set a value according to its path.
+	 * 
+	 * @param path
+	 *          A non-null string of the format <code>/a/b/0/c</code>.
+	 * @param newValue
+	 *          The new value.
+	 * @return <code>true</code> if successful. <code>false</code> otherwise.
+	 */
+	protected boolean setByPath(String path, Object o)
+			throws IllegalArgumentException, NumberFormatException {
+		if (path != null && !path.isEmpty()) {
+			if (path.endsWith("/")) {
+				throw new IllegalArgumentException(
+						String.format("Path %s cannot end with trailing \"/\".", path));
+			}
+			
+			JsonValue newValue = objectToJsonValue(o);
+			
+			int lastSlash = path.lastIndexOf("/");
+			String lastPath = path.substring(lastSlash+1);
+
+			JsonValue value = getByPath(path.substring(0, lastSlash));
+			switch (value.getType()) {
+				case MAP: value.asMap().put(lastPath, newValue); break;
+				case ARRAY: value.asArray().set(Integer.parseInt(lastPath), newValue); break;
+				default: throw new IllegalArgumentException(String.format("Unknown path: %s", path));
+			}
+			
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * A convenience method to Save this value to file with the given indent, assuming a UTF-8
