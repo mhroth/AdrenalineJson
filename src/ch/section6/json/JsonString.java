@@ -85,6 +85,11 @@ public class JsonString extends JsonValue {
 		}
 		s = s.replace("\\", "\\\\"); // escape '\'
 		s = s.replace("\"", "\\\""); // escape '"'
+		s = s.replace("\n", "\\n");  // escape '\n'
+		s = s.replace("\r", "\\r");  // escape '\r'
+		s = s.replace("\t", "\\t");  // escape '\t'
+		s = s.replace("\b", "\\b");  // escape '\b'
+		s = s.replace("\f", "\\f");  // escape '\f'
 		return String.format("\"%s\"", s);
 	}
 
